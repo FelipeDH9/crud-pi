@@ -1,0 +1,500 @@
+:root {
+    --main-color: rgb(26, 128, 245);
+    --secondary-color: rgb(0, 44, 165);
+    --bg-color: #adadad;
+    --fav-color: rgb(25, 172, 5);
+    --text-color: rgb(0, 0, 0);
+    --delete-btn: rgb(192, 30, 38);
+    --btn-hover: rgb(0 0 0);
+  }
+  
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  li,
+  span {
+    color: var(--text-color);
+  }
+  
+  body {
+    font-family: 'Ubuntu', sans-serif;
+  
+  }
+  
+  label {
+    color: var(--text-color);
+  }
+  
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    padding: 0.5rem 0;
+    margin: 0;
+  }
+  
+  body {
+    /* min-height: 100vh; */
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-color);
+  }
+  
+  label {
+    padding-bottom: 5px;
+  }
+  
+  /* center all elements in the middle of the page */
+  main {
+    margin-top: auto;
+  }
+  
+  .bold {
+    font-weight: bold;
+  }
+  
+  .user-image {
+    width: 4rem;
+    border-radius: 4rem;
+  }
+  
+  .no-spacing {
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* HEADER */
+  /* send menu to the right */
+  .navbar-collapse {
+    flex-direction: row-reverse;
+  }
+  
+  header {
+    background-color: var(--main-color);
+  }
+  
+  
+  .nav-item .nav-link {
+    font-weight: bold;
+    color: var(--text-color);
+    font-size: 1.5rem;
+  }
+  
+  .nav-item .nav-link:hover {
+    color: var(--secondary-color);
+  }
+  
+  .navbar-brand {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--text-color);
+  }
+  
+  .navbar-brand:hover {
+    color: var(--secondary-color);
+  }
+  
+  .navbar-toggler {
+    margin: 0rem;
+    padding: 0;
+    border: none;
+  }
+  
+  .navbar-toggler > svg {
+    width: 3rem;
+    height: auto;
+  }
+  
+  .nav-item {
+    padding: 4px;
+  }
+  
+  /* end header */
+  
+  
+  /* BACK TO TOP BUTTON */
+  .back-to-top {
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.5s;
+  }
+  
+  .back-to-top.show svg {
+    width: 2rem;
+    height: 2rem;
+  }
+  
+  .back-to-top.show {
+    width: auto;
+    opacity: 1;
+    visibility: visible;
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    color: var(--main-color);
+  }
+  
+  .back-to-top.show:hover {
+    color: var(--secondary-color);
+  }
+  
+  a {
+    color: var(--secondary-color);
+  }
+  
+  a:hover {
+    color: var(--main-color);
+  }
+  
+  /* REGISTER */
+  div.col {
+    text-align: center;
+  }
+  
+  label {
+    width: 100%;
+  }
+  
+  .btn {
+    margin-top: 1rem;
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    width: 100%;
+    font-weight: bold;
+  }
+  
+  .btn:hover {
+    background-color: var(--main-color);
+    border-color: var(--main-color);
+  }
+  
+  .flex {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-wrap: wrap;
+  }
+  
+  .currency {
+    width: auto;
+  }
+  
+  .custom-select {
+    border-radius: 5px;
+    margin: 1rem;
+    height: 2.5rem;
+  }
+  
+  /* END REGISTER */
+  
+  /* LIST */
+  .space-around {
+    justify-content: space-around;
+  }
+  
+  .space-between {
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .card {
+    border-color: var(--secondary-color);
+    background-color: var(--bg-color);
+    margin: 1rem 0;
+  }
+  
+  .card .card-body > h2,
+  h3,
+  p {
+    margin-top: 0;
+  }
+  
+  .card-title {
+      line-height: 2rem;
+      padding: 0;
+    color: var(--text-color);
+    text-align: center;
+  }
+  
+  
+  .card-infos {
+    margin-bottom: 0;
+    padding: 8px;
+  }
+  
+  .card-btns {
+    border-radius: 5px;
+    color: var(--text-color);
+    border: 0px;
+    padding: 5px 0;
+    width: 190px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-weight: bold;
+    justify-content: center;
+  }
+  
+  .card-btns > svg {
+    margin-right: 5px;
+  }
+  
+  .card-btns:hover {
+    opacity: 0.5;
+    color: var(--hover-color);
+  }
+  
+  /* LINK BUTTON */
+  .link-btn {
+    background-color: var(--secondary-color);
+  }
+  
+  /* delete item button */
+  .delete-btn {
+    background-color: var(--delete-btn);
+  }
+  
+  /* edit item button */
+  .edit-btn {
+    background-color: var(--main-color);
+  }
+  
+  
+  /* EDIT PAGE */
+  .currency {
+    padding: 0;
+    margin: 0;
+    margin-right: .5rem;
+  }
+    
+  .currency-select {
+    margin:  0;
+  }
+    
+  .currency-flex {
+    margin-top: 1rem;
+    align-items: center;
+  }
+  
+  /* ADD PRODUCT PAGE */
+  .form-control {
+    margin-bottom: 1rem;
+  }
+  
+  /* ADD PRODUCT BUTTON */
+  .add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .add-btn > svg {
+    margin-right: 5px;
+  }
+  
+  /* favorite item button */
+  .favorite-btn,
+  .favorite-btn > span {
+    background: none;
+    border: 0px;
+    color: var(--fav-color);
+    padding: 0;
+    font-weight: bold;
+  }
+  
+  .favorite-btn:hover,
+  .favorite-btn > span:hover {
+    opacity: .5;
+  }
+  
+  /* ACCOUNT */
+  .user-flex {
+    align-items: center;
+    margin-top: 1rem;
+  }
+  
+  .user-flex > p {
+    font-size: 2rem;
+  }
+  
+  .user-image {
+    margin-right: 1rem;
+  }
+  
+  /* ADD */
+  .tax {
+    width: 100%;
+    margin: 0;
+    padding: 6.5px;
+  }
+  
+  /* ALERTS */
+  .alert {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+  }
+  
+  .alert > button {
+    border: 0px;
+    padding: 0px;
+  }
+  
+  .alert-warning > button {
+    background-color: #fff3cd;
+  }
+  
+  .alert-danger > button {
+    background-color: #f8d7da;
+  }
+  
+  .alert-danger {
+    font-weight: bold;
+  }
+  
+  .alert-success > button {
+    background-color: #d1e7dd;
+  }
+  
+  .alert > button > span {
+    color: black;
+    font-size: 2rem;
+    padding: 0px;
+    line-height: 2rem;
+  }
+  
+  /* DIALOG MODAL */
+  dialog::backdrop {
+    background-color: rgb(0, 0,0, .5);
+  }
+  
+  dialog {
+    background-color: var(--bg-color);
+    border-radius: 1rem;
+    border: 2px solid var(--main-color);
+  }
+  
+  dialog > div {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  dialog > p, h1 {
+    text-align: center;
+  }
+  
+  .dl-btn {
+    border-radius: 5px;
+    font-weight: bold;
+    padding: 0.5rem 1.5rem;
+    border: 0px;
+    width: 8rem;
+  }
+  
+  .confirm {
+    background-color: var(--delete-btn);
+    color: var(--text-color);
+  }
+  
+  .confirm:hover {
+    color: var(--btn-hover);
+    opacity: 0.5;
+  }
+  
+  .close {
+    background: white;
+  }
+  
+  .close:hover {
+    opacity: 0.5;
+  }
+  
+  /* ABOUT WISHVERSE */
+  .colored {
+    color: var(--secondary-color);
+  }
+  /* RESPONSIVE */
+  @media (max-width: 767px) {
+    /* REGISTER */
+    .row {
+      display: block;
+    }
+  
+    .btn {
+      margin: 1rem 0;
+    }
+  
+    .card > .card-body > .flex {
+      align-items: center;
+      flex-direction: column;
+      width: 100%
+    }
+  
+    .card-body > .flex > h2 {
+      line-height: 3rem;
+    }
+  
+    .delete-btn {
+      margin-top: 1rem;
+      width: 100%;
+    }
+  
+    .edit-form {
+      width: 100%;
+    }
+  
+    /* EDIT PAGE */
+    .edit-btn {
+      margin-bottom: 1rem;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+  
+    .link-btn {
+      width: 100%;
+    }
+  
+    h3 {
+      margin-top: 1rem;
+    }
+  
+    /* .currency {
+      margin-bottom: .5rem;
+      } */
+  }
+  
+  @media (max-width: 320px) {
+    button.btn {
+      width: 100%;
+    }
+  
+    select {
+      width: 80%;
+    }
+  
+    .navbar-brand {
+      font-size: 1rem;
+    }
+  
+    .navbar-toggler > svg {
+      width: 1.5rem;
+      height: auto;
+    }
+  
+    .navbar-toggler {
+      margin: 0;
+    }
+  
+      .currency {
+      margin-bottom: .5rem;
+      }
+  }
+  
