@@ -17,21 +17,24 @@
 {% endfor %}
 
 <h1 class="text-center">Adicione Ativo Físico (<i>Hardware</i>)</h1>
-<form action="/add" method="post">
+<h3 class="text-center">Todos os campos são obrigatórios!</h3>
+<form action="/add_hardware" method="post">
   <div class="row">
     <div class="col">
-      <label for="codigo">Código identificador do Ativo</label>
+      <label for="patrimony">Patrimônio do Ativo</label>
       <input
         autofocus
         class="form-control"
-        id="codigo"
-        name="codigo"
+        id="patrimony"
+        name="patrimony"
         placeholder="..."
-        type="text"
-        required
-      />
-    </div>
-
+        type="number"
+        step="1"
+        min="0"
+        max="999999"
+        />
+      </div>
+      
     <div class="col">
       <label for="description">Descrição do Ativo</label>
       <input
@@ -40,44 +43,35 @@
         name="description"
         placeholder="..."
         type="text"
-        required
+        
       />
     </div>
   </div>
 
   <div class="row">
     <div class="col">
-      <label for="dt-buy">Data de compra do ativo</label>
+      <label for="dt_buy">Data de compra do ativo</label>
       <input
         class="form-control"
-        id="dt-buy"
-        name="dt-buy"
+        id="dt_buy"
+        name="dt_buy"
         type="date"
-        required
+        
       />
     </div>
 
     <div class="col">
-      <label for="dt-rev">Data da próxima revisão prevista <strong style="color: red;">*</strong></label>
+      <label for="dt_rev">Data da próxima revisão prevista <strong style="color: red;">*</strong></label>
       <input
         class="form-control"
-        id="dt-rev"
-        name="dt-rev"
+        id="dt_rev"
+        name="dt_rev"
         type="date"
-        required
+        
       />
     </div>
   </div>
 
-  <!-- <div class="col">
-    <label class="department" for="department">O tipo da revisão prevista:</label>
-      <select class="custom-select" id="department" name="department">
-        <option selected disabled>Escolha o departamento</option>
-        {% for department in departments %}
-        <option value="{{department['codigo']}}">{{ department['nome'] }}</option>
-        {% endfor %}
-      </select>
-  </div> -->
 
   <div class="row">
     <div class="col">
@@ -89,22 +83,11 @@
         placeholder="..."
         type="number"
         step="0.01"
+        max="99999.99"
         min="0"
-        required
-      />
-    </div>
-<!-- 
-    <div class="col">
-      <label for="quantity">Quantity</label>
-      <input
-        class="form-control"
-        id="quantity"
-        name="quantity"
-        placeholder="E.g., 2"
-        type="number"
-        min="0"
-      />
-    </div> -->
+        
+        />
+      </div>
     
   </div>
 
@@ -113,42 +96,15 @@
   
     <div class="col">
       <label class="department" for="department">Escolha o departamento que este ativo pertence:</label>
-        <select class="custom-select" id="department" name="department" required>
+        <select class="custom-select" id="department" name="department" >
           <option selected disabled>Escolha o departamento</option>
           {% for department in departments %}
-          <option value="{{department['codigo']}}">{{ department['nome'] }}</option>
+          <option value="{{department}}">{{ department }}</option>
           {% endfor %}
         </select>
     </div>
 
-    <!-- <div class="col">
-      <label class="type" for="type">Escolha o tipo do ativo:</label>
-        <select class="custom-select" id="type" name="type">
-          <option selected disabled>Escolha o tipo</option>
-          {% for type in types %}
-          <option value="{{ type }}">{{ type }}</option>
-          {% endfor %}
-        </select>
-    </div>
-  </div> -->
-
-
-  <button type="submit" class="add-btn btn btn-primary">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      fill="currentColor"
-      class="bi bi-bag-plus-fill"
-      viewBox="0 0 16 16"
-    >
-      <path
-        fill-rule="evenodd"
-        d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5v-.5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0zM8.5 8a.5.5 0 0 0-1 0v1.5H6a.5.5 0 0 0 0 1h1.5V12a.5.5 0 0 0 1 0v-1.5H10a.5.5 0 0 0 0-1H8.5V8z"
-      />
-    </svg>
-    Adicionar ativo
-  </button>
+  <button type="submit" class="add-btn btn btn-primary">Adicionar ativo</button>
 </form>
 
 <p class="text-center mt-5"><strong style="color: red;">*</strong> Deve ser previamente definido pela empresa</p>
