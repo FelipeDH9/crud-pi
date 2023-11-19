@@ -28,7 +28,7 @@ def criarBD(host, usuario, senha, DB):
 
 
 
-def conectarBD (host, usuario, senha, DB):
+def conectarBD(host, usuario, senha, DB):
     try:
         connection=mysql.connector.connect( #Informando dados de conexão
             host = host, #ip do servidor do banco de dados
@@ -54,27 +54,6 @@ def conectarBD (host, usuario, senha, DB):
 #     for result in results: #Percorrer a lista com as linhas geradas pelo SELECT
 #         print(result) #Imprime cada linha gerada pelo SELECT
 
-#  INSERIR DADOS NO BANCO DE DADOS
-# def insertBD(nome, rg, cpf, endereco,cidade,uf,conn):
-#     connection = conn #Recebe a conexão estabelecida com o banco
-#     cursor = connection.cursor() #Cursor para comunicação com o banco
-
-#     sql = "INSERT INTO CLIENTE (nome, rg,cpf,endereco,cidade,uf) VALUES(%s,%s,%s,%s,%s,%s)"
-#     data = (
-#         nome,
-#         rg,
-#         cpf,
-#         endereco,
-#         cidade,
-#         uf
-#     )
-#     cursor.execute(sql,data) #Executa o comando SQL
-#     connection.commit() #Efetua as modificações na tabela
-
-#     cliente_id = cursor.lastrowid #Obter o último ID cadastrado
-#     cursor.close() #Fecha o cursor
-#     connection.close() #Fecha a conexão
-#     print("Foi cadastrado o novo cliente de ID ",cliente_id)
 
 
 # FUNÇÃO BASE QUE CRIA A TABELA DE ACORDO COM O ARGUMENTO PASSADO
