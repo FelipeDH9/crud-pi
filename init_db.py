@@ -41,6 +41,42 @@ def conectarBD (host, usuario, senha, DB):
         pass
 
 
+# def read_BD(conn):
+#     connection = conn #Recebe a conexão estabelecida com o banco
+#     cursor = connection.cursor() #Cursor para comunicação com o banco
+
+#     #Realizando um select para mostrar todas as linhas e colunas da tabela
+#     cursor.execute("SELECT * FROM CLIENTE") #Executa o comando SQL
+#     results = cursor.fetchall() #Obtendo todas as linhas geradas pelo select
+#     cursor.close() #Fecha o cursor
+#     connection.close() #Fecha a conexão com o banco
+
+#     for result in results: #Percorrer a lista com as linhas geradas pelo SELECT
+#         print(result) #Imprime cada linha gerada pelo SELECT
+
+#  INSERIR DADOS NO BANCO DE DADOS
+# def insertBD(nome, rg, cpf, endereco,cidade,uf,conn):
+#     connection = conn #Recebe a conexão estabelecida com o banco
+#     cursor = connection.cursor() #Cursor para comunicação com o banco
+
+#     sql = "INSERT INTO CLIENTE (nome, rg,cpf,endereco,cidade,uf) VALUES(%s,%s,%s,%s,%s,%s)"
+#     data = (
+#         nome,
+#         rg,
+#         cpf,
+#         endereco,
+#         cidade,
+#         uf
+#     )
+#     cursor.execute(sql,data) #Executa o comando SQL
+#     connection.commit() #Efetua as modificações na tabela
+
+#     cliente_id = cursor.lastrowid #Obter o último ID cadastrado
+#     cursor.close() #Fecha o cursor
+#     connection.close() #Fecha a conexão
+#     print("Foi cadastrado o novo cliente de ID ",cliente_id)
+
+
 # FUNÇÃO BASE QUE CRIA A TABELA DE ACORDO COM O ARGUMENTO PASSADO
 def criarTabela(host, usuario, senha, DB, tabela):
     connection=conectarBD (host, usuario, senha, DB)
