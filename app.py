@@ -116,7 +116,6 @@ def add_hardware():
         cursor.close() #Fecha o cursor
         connection.close() #Fecha a conexão com o banco
 
-        # patrimony_list = []
         for result in all_patrimonies:
             if patrimony == result[0]:                
                 flash("Patrimonio já cadastrado!", "danger")
@@ -205,6 +204,7 @@ def all_hardwares():
 
     for hardware in all_hardwares:
         hardware[5] = float(hardware[5])
+
     # INSERIR NA LISTA DE LISTAS DOS HARDWARES O CUSTO TOTAL DE REVISÕES DELE
     for hardware in all_hardwares:
         for sum_rev in sum_revisoes:
@@ -217,34 +217,12 @@ def all_hardwares():
 @app.route("/delete_hardware", methods=["POST"])
 def delete_hardware():
     hardware_id = request.form.get("hardware_id")
-    # hardware_id = '99'
 
     # validar se o hardware_id existe, se é um digito e se é maior que 0
     if not hardware_id or not hardware_id.isdigit() or int(hardware_id) <= 0:
         flash("1 Hardware não encontrado!", "danger")
         return redirect("/all_hardwares")
-
-    # conectar com o banco de dados e pegar todos os hardwares
-    # connection = conectarBD("localhost", "root", "root", "empresa")
-    # cursor = connection.cursor() #Cursor para comunicação com o banco
-    # cursor.execute("SELECT id FROM hardwares")
-    # results = cursor.fetchall()
-    # cursor.close()
-    # connection.close()
     
-    # # converter list de tuplas em lista de listas
-    # results2 = list(map(list, results))
-    # hardwares_id = []
-
-    # # converter lista de listas em uma lista de ints
-    # for hardware in results2:
-    #     hardwares_id.append(int(hardware[0]))
-    
-    # # validar se o hardware escolhido está no banco de dados
-    # if int(hardware_id) not in hardwares_id:
-    #     flash("Hardware não encontrado 2!", "danger")
-    #     return redirect("/all_hardwares")
-
     # validar se o hardware escolhido está no banco de dados
 
     connection = conectarBD("localhost", "root", "root", "empresa")
@@ -295,7 +273,6 @@ def edit_hardware():
         #Realizando um select para mostrar todas as linhas e colunas da tabela
         cursor.execute("SELECT * FROM hardwares WHERE id = %s", (hardware_id,)) 
         results = cursor.fetchall() 
-        # return render_template("mes.html", mes=f'{dt_buy}: {results[0][3]}')
 
         counter = 0
         
@@ -415,7 +392,7 @@ def add_rev_hardware():
         type_rev = request.form.get("type_rev")
         dt_rev = request.form.get("dt_rev")
         price = request.form.get("price")
-        infos = request.form.get("infos")
+        infos = request.form.get("infos").capitalize()
         department = request.form.get("department")  
         
 
@@ -509,6 +486,33 @@ def add_rev_hardware():
             
 
             return render_template("add_rev_hardware.html", hardware=hardware,  type_revs=REVISOES_HARDWARE, departments=DEPARTMENTS_LIST)
+
+
+@app.route("/all_rev_hardware")
+def all_rev_hardware():
+    hardware_id = request.args.get("hardware_id")
+    patrimony = request.args.get("patrimony")
+
+    # consultar todos as as revisões do hardware
+    connection = conectarBD("localhost", "root", "root", "empresa")
+    cursor = connection.cursor() 
+    cursor.execute("SELECT * FROM revisoes_hardware WHERE hardwares_id = %s", (hardware_id,)) 
+    results = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    all_revs = results
+
+    # converter a lista de tuplas em uma lista de listas
+    all_revs = list(map(list, results))
+
+    sum_revs = 0
+    for rev in all_revs:
+        sum_revs += rev[2]
+
+    return render_template("all_rev_hardware.html", all_revs=all_revs, patrimony=patrimony, type_revs=REVISOES_HARDWARE, sum_revs=sum_revs)
+
+
 
 # SOFTWARES
 # TODO

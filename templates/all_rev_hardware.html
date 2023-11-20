@@ -1,0 +1,84 @@
+{% extends "layout.html" %} 
+
+{% block title%}{% endblock%} 
+{% block main %} 
+{% for category, message in get_flashed_messages(with_categories=true) %}
+
+<div
+  class="alert alert-{{ category }} alert-dismissible fade show"
+  role="alert"
+>
+  {{ message }}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+{% endfor %}
+
+
+
+{% if not all_revs %}
+<h3 class="text-center">Sem revisões para mostrar!</h3>
+
+{% else %}
+<h2 class="text-center">Filtros</h2>
+
+<!-- INPUTS DE FILTRAGEM -->
+<div class="row">
+ 
+
+  <div class="col">
+    <label for="data_search">Filtrar data</label>
+    <input class="form-control" type="date" id="data_search" onkeyup="filter('data_search', 0)" placeholder="...">
+  </div>
+
+  <div class="col">
+    <label for="type_search">Filtrar Tipo de Revisão</label>
+    <input class="form-control" type="text" id="type_search" onkeyup="filter('type_search', 1)" placeholder="...">
+  </div>
+
+  <div class="col">
+    <label for="infos_search">Filtrar Informações</label>
+    <input class="form-control" infos="text" id="infos_search" onkeyup="filter('infos_search', 3)" placeholder="...">
+  </div>
+</div>
+
+
+<h2 class="text-center">Todas as revisões do hardware: {{ patrimony }}</h2>
+
+<h3 class="text-center">Valor total das revisões: {{ sum_revs | money_format }}</h3>
+
+<table class="table table-striped" id='hardwares'>
+  <thead>
+    <tr>
+      <th scope="col">Data da revisão</th>
+      <th scope="col">Tipo de revisão</th>
+      <th scope="col">Valor da revisão</th>
+      <th scope="col">Informações</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for rev in all_revs %}
+    
+      <tr>
+        <td scope="row">{{ rev[1] }}</td>
+        <td>{{  rev[3]  }}</td>
+        <td>{{  rev[2] | money_format }}</td>
+        {% if not rev[4] %}
+        <td>Sem informações sobre revisão</td>
+
+        {% else %}
+        <td>{{  rev[4]  }}</td>
+
+        {% endif %}
+      </tr>
+    {% endfor %}
+    
+  </tbody>
+</table>
+{% endif %}
+
+
+{% endblock %}

@@ -107,13 +107,6 @@
           </a>
           <ul class="dropdown-menu">
 
-            <!-- <form action="/add_rev_hardware" method="get" class="edit-form">
-              <input name="hardware_id" type="hidden" value="{{ hardware[0] }}">
-              <button type="submit" class="dropdown-item options">Adicionar Revisão</button>
-            </form> -->
-
-            <!-- <a class="dropdown-item options" href="/add_rev_hardware">Adicionar Revisão</a> -->
-
             <form action="/add_rev_hardware" method="get" class="edit-form">
               <input name="hardware_id" type="hidden" value="{{ hardware[0] }}">
               <button type="submit" class="dropdown-item options">Adicionar Revisão</button>
@@ -121,6 +114,8 @@
 
             <form action="/all_rev_hardware" method="get" class="edit-form">
               <input name="hardware_id" type="hidden" value="{{ hardware[0] }}">
+              <input name="patrimony" type="hidden" value="{{ hardware[1] }}">
+
               <button type="submit" class="dropdown-item options">Revisões</button>
             </form>
 

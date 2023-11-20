@@ -22,21 +22,7 @@
 <form action="/edit_hardware" method="post">
   <input name="hardware_id" type="hidden" value="{{ hardware[0][0] }}" />
   <div class="row">
-    <!-- <div class="col">
-      <label for="patrimony">Patrimônio do Ativo (deve conter no máximo 6 dígitos numéricos!)</label>
-      <input
-        autofocus
-        class="form-control"
-        id="patrimony"
-        name="patrimony"
-        placeholder="{{ hardware[0][1] }}"
-        type="number"
-        step="1"
-        min="0"
-        max="999999"
-        />
-      </div> -->
-      
+          
     <div class="col">
       <label for="description">Descrição do Ativo (deve conter no máximo 45 dígitos alfanuméricos!)</label>
       <input
