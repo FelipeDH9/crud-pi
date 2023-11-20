@@ -4,17 +4,16 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 
 
-// filter by patrimony
-function filterByPatrimony() {
+// filter
+function filter(input_id, n) {
     var input, filter, table, tr, td, i, txtValue;
-    input = document.getElementById("patrimony_search");
+    input = document.getElementById(input_id);
     filter = input.value.toUpperCase();
     table = document.getElementById("hardwares");
     tr = table.getElementsByTagName("tr");
   
-    // Loop through all table rows, and hide those who don't match the search query
     for (i = 0; i < tr.length; i++) {
-      td = tr[i].getElementsByTagName("td")[0];
+      td = tr[i].getElementsByTagName("td")[n];
       if (td) {
         txtValue = td.textContent || td.innerText;
         if (txtValue.toUpperCase().indexOf(filter) > -1) {
@@ -27,90 +26,26 @@ function filterByPatrimony() {
 }
 
 
-// filter by description
-function filterByDescription() {
-    var input, filter, table, tr, td, i, txtValue;
-    input = document.getElementById("description_search");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("hardwares");
-    tr = table.getElementsByTagName("tr");
-  
-    // Loop through all table rows, and hide those who don't match the search query
-    for (i = 0; i < tr.length; i++) {
-      td = tr[i].getElementsByTagName("td")[1];
-      if (td) {
-        txtValue = td.textContent || td.innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-          tr[i].style.display = "";
-        } else {
-          tr[i].style.display = "none";
-        }
-      }
-    }
-}
 
-// filter by department
-function filterByDepartment() {
-    var input, filter, table, tr, td, i, txtValue;
-    input = document.getElementById("department_search");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("hardwares");
-    tr = table.getElementsByTagName("tr");
+// dialog modal for delete confirmation
+const open_buttons = document.querySelectorAll("button.delete");
+const modal = document.querySelector('dialog');
+const modal_id = document.getElementById("modal_id");
 
-    // Loop through all table rows, and hide those who don't match the search query
-    for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[2];
-        if (td) {
-        txtValue = td.textContent || td.innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-            tr[i].style.display = "";
-        } else {
-            tr[i].style.display = "none";
-        }
-        }
-    }
-}
+const close = document.getElementById("close");
 
-// filter by buy data
-function filterBuyData() {
-    var input, filter, table, tr, td, i, txtValue;
-    input = document.getElementById("buy_search");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("hardwares");
-    tr = table.getElementsByTagName("tr");
-  
-    // Loop through all table rows, and hide those who don't match the search query
-    for (i = 0; i < tr.length; i++) {
-      td = tr[i].getElementsByTagName("td")[3];
-      if (td) {
-        txtValue = td.textContent || td.innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-          tr[i].style.display = "";
-        } else {
-          tr[i].style.display = "none";
-        }
-      }
-    }
-}
+open_buttons.forEach((button)=>{
+  button.addEventListener('click', ()=> {
+    // get button value with button.value
+    const product_id = button.value;
+    // update the value of the input in dialog to product id
+    modal_id.value = product_id;
+    modal.showModal();
+  })
+});
 
-// filter by rev data
-function filterRevData() {
-    var input, filter, table, tr, td, i, txtValue;
-    input = document.getElementById("rev_search");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("hardwares");
-    tr = table.getElementsByTagName("tr");
-  
-    // Loop through all table rows, and hide those who don't match the search query
-    for (i = 0; i < tr.length; i++) {
-      td = tr[i].getElementsByTagName("td")[4];
-      if (td) {
-        txtValue = td.textContent || td.innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-          tr[i].style.display = "";
-        } else {
-          tr[i].style.display = "none";
-        }
-      }
-    }
-}
+
+close.onclick = function(){
+  modal.close();
+  modal_id.value = 0;
+};

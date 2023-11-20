@@ -416,10 +416,20 @@
     opacity: 0.5;
   }
   
-  /* ABOUT WISHVERSE */
-  .colored {
-    color: var(--secondary-color);
-  }
+/* SERACH TABLES */
+td, th {
+  text-align: center;
+  vertical-align: middle;
+}
+.options {
+  text-decoration: none;
+}
+.delete {
+  color: red;
+  font-weight: bold;
+}
+
+
   /* RESPONSIVE */
   @media (max-width: 767px) {
     /* REGISTER */

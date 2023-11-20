@@ -28,17 +28,17 @@
 <div class="row">
   <div class="col"> 
     <label for="patrimony_search">Filtrar patrimônio</label>
-    <input class="form-control" type="number" id="patrimony_search" onkeyup="filterByPatrimony()" placeholder="..." min="0" max="999999" step="1">
+    <input class="form-control" type="number" id="patrimony_search" onkeyup="filter('patrimony_search', 0)" placeholder="..." min="0" max="999999" step="1">
   </div>
 
   <div class="col">
     <label for="description_search">Filtrar descrição</label>
-    <input class="form-control" type="text" id="description_search" onkeyup="filterByDescription()" placeholder="...">
+    <input class="form-control" type="text" id="description_search" onkeyup="filter('description_search', 1)" placeholder="...">
   </div>
 
   <div class="col">
     <label for="department_search">Filtrar departamento</label>
-    <input class="form-control" type="text" id="department_search" onkeyup="filterByDepartment()" placeholder="...">
+    <input class="form-control" type="text" id="department_search" onkeyup="filter('department_search', 2)" placeholder="...">
   </div>
 
 </div>
@@ -46,12 +46,12 @@
 <div class="row">
   <div class="col"> 
     <label for="buy_search">Filtrar pela data de compra</label>
-    <input class="form-control" type="date" id="buy_search" onkeyup="filterBuyData()">
+    <input class="form-control" type="date" id="buy_search" onkeyup="filter('buy_search', 3)">
   </div>
 
   <div class="col">
     <label for="buy_search">Filtrar pela data da próxima revisão</label>
-    <input class="form-control" type="date" id="rev_search" onkeyup="filterRevData()">
+    <input class="form-control" type="date" id="rev_search" onkeyup="filter('rev_search', 4)">
   </div>
 
 </div>
@@ -71,6 +71,8 @@
       <th scope="col">Valor inicial do ativo</th>
       <th scope="col">Valor das revisões</th>
       <th scope="col">Valor total do ativo</th>
+      <th scope="col">Opções</th>
+      
     </tr>
   </thead>
 
@@ -78,7 +80,7 @@
     {% for hardware in all_hardwares %}
     
       <tr>
-        <td scope="row">{{ hardware[1] }}</td>
+        <td scope="row">{{ hardware[0] }}</td>
         <td>{{  hardware[2]  }}</td>
         <td>{{  hardware[6]  }}</td>
         <td>{{  hardware[3]  }}</td>
@@ -97,14 +99,38 @@
         <td>{{  hardware[5] | money_format  }}</td>
         {% endif %}
 
+        <td>
+          <a class="options" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+              <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+            </svg>
+          </a>
+          <ul class="dropdown-menu">
+            <a class="dropdown-item" href="/add_hardware">Adicionar Revisão</a>
+              <a class="dropdown-item" href="/add_hardware">Editar</a>
+              <a class="dropdown-item" href="/add_hardware">Ver softwares</a>
+              <button class="delete dropdown-item" value="{{ hardware[0] }}">Apagar</button>
 
+          </ul>
+        </td>
+        
       </tr>
     {% endfor %}
     
   </tbody>
 </table>
 {% endif %}
+<dialog>
+  <h1>Tem certeza que deseja apagar o ativo?</h1>
+  <div>
 
+      <button class="dl-btn close" id="close">Cancelar</button>
+      <form action="/delete" method="post">
+          <input name="hardware_id" type="hidden" value="0" id="modal_id">
+          <button class="dl-btn confirm" type="submit">Confirmar!</button>
+      </form>
+  </div>
+</dialog>
 
 
 

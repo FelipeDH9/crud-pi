@@ -317,5 +317,64 @@ def all_softwares():
         connection.close() 
         return render_template("all_softwares.html", all_softwares=all_softwares)
 
+
+@app.route("/delete", methods=["POST"])
+def delete():
+    hardware_id = request.form.get("hardware_id")
+    # hardware_id = '99'
+
+    # validar se o hardware_id existe, se é um digito e se é maior que 0
+    if not hardware_id or not hardware_id.isdigit() or int(hardware_id) <= 0:
+        flash("Hardware não encontrado 1!", "danger")
+        return redirect("/all_hardwares")
+
+    # conectar com o banco de dados e pegar todos os hardwares
+    # connection = conectarBD("localhost", "root", "root", "empresa")
+    # cursor = connection.cursor() #Cursor para comunicação com o banco
+    # cursor.execute("SELECT id FROM hardwares")
+    # results = cursor.fetchall()
+    # cursor.close()
+    # connection.close()
+    
+    # # converter list de tuplas em lista de listas
+    # results2 = list(map(list, results))
+    # hardwares_id = []
+
+    # # converter lista de listas em uma lista de ints
+    # for hardware in results2:
+    #     hardwares_id.append(int(hardware[0]))
+    
+    # # validar se o hardware escolhido está no banco de dados
+    # if int(hardware_id) not in hardwares_id:
+    #     flash("Hardware não encontrado 2!", "danger")
+    #     return redirect("/all_hardwares")
+
+    connection = conectarBD("localhost", "root", "root", "empresa")
+    cursor = connection.cursor() #Cursor para comunicação com o banco
+    cursor.execute("SELECT id FROM hardwares WHERE id = %s", (hardware_id,))
+    results = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+
+    # validar se a quantidade de tuplas de resultado da busca no banco de dados é maior que 1, ou seja, se o dado existe
+    if len(results) != 1:
+        flash("Hardware não encontrado!", "danger")
+        return redirect("/all_hardwares")
+
+    else:
+        connection = conectarBD("localhost", "root", "root", "empresa")
+        cursor = connection.cursor() #Cursor para comunicação com o banco
+        cursor.execute("DELETE FROM hardwares WHERE id = %s", (hardware_id,))
+        results = cursor.fetchall()
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        flash("Hardware deletado", "warning")
+        return redirect('/all_hardwares') 
+     
+    
+
 if __name__ =='__main__':
     app.run()
