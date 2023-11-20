@@ -421,9 +421,16 @@ td, th {
   text-align: center;
   vertical-align: middle;
 }
-.options {
+
+.dots {
   text-decoration: none;
 }
+
+.options:hover {
+  background-color: var(--main-color);
+  opacity: 0.6;
+}
+
 .delete {
   color: red;
   font-weight: bold;

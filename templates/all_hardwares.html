@@ -68,9 +68,9 @@
       <th scope="col">Departamento</th>
       <th scope="col">Data de compra</th>
       <th scope="col">Data da próxima revisão</th>
-      <th scope="col">Valor inicial do ativo</th>
+      <th scope="col">Valor inicial</th>
       <th scope="col">Valor das revisões</th>
-      <th scope="col">Valor total do ativo</th>
+      <th scope="col">Valor total</th>
       <th scope="col">Opções</th>
       
     </tr>
@@ -80,7 +80,7 @@
     {% for hardware in all_hardwares %}
     
       <tr>
-        <td scope="row">{{ hardware[0] }}</td>
+        <td scope="row">{{ hardware[1] }}</td>
         <td>{{  hardware[2]  }}</td>
         <td>{{  hardware[6]  }}</td>
         <td>{{  hardware[3]  }}</td>
@@ -100,16 +100,28 @@
         {% endif %}
 
         <td>
-          <a class="options" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="dots" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
               <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
             </svg>
           </a>
           <ul class="dropdown-menu">
-            <a class="dropdown-item" href="/add_hardware">Adicionar Revisão</a>
-              <a class="dropdown-item" href="/add_hardware">Editar</a>
-              <a class="dropdown-item" href="/add_hardware">Ver softwares</a>
-              <button class="delete dropdown-item" value="{{ hardware[0] }}">Apagar</button>
+
+            <!-- <form action="/add_rev_hardware" method="get" class="edit-form">
+              <input name="hardware_id" type="hidden" value="{{ hardware[0] }}">
+              <button type="submit" class="dropdown-item options">Adicionar Revisão</button>
+            </form> -->
+
+            <a class="dropdown-item options" href="/add_hardware">Adicionar Revisão</a>
+
+
+            <form action="/edit_hardware" method="get" class="edit-form">
+              <input name="hardware_id" type="hidden" value="{{ hardware[0] }}">
+              <button type="submit" class="dropdown-item options">Editar</button>
+            </form>
+
+            <a class="dropdown-item options" href="/add_hardware">Ver softwares</a>
+            <button class="delete dropdown-item options" value="{{ hardware[0] }}">Apagar</button>
 
           </ul>
         </td>
@@ -125,7 +137,7 @@
   <div>
 
       <button class="dl-btn close" id="close">Cancelar</button>
-      <form action="/delete" method="post">
+      <form action="/delete_hardware" method="post">
           <input name="hardware_id" type="hidden" value="0" id="modal_id">
           <button class="dl-btn confirm" type="submit">Confirmar!</button>
       </form>
