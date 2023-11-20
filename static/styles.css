@@ -50,6 +50,11 @@
     padding-bottom: 5px;
   }
   
+.grid {
+  display: grid;
+  justify-items: center;
+}
+
   /* center all elements in the middle of the page */
   main {
     margin-top: auto;

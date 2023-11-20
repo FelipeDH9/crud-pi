@@ -5,7 +5,7 @@
 {% for category, message in get_flashed_messages(with_categories=true) %}
 
 <div
-  class="alert alert-{{ category }} alert-dismissible fade show"
+  class="btn btn-primaryalert alert-{{ category }} alert-dismissible fade show"
   role="alert"
 >
   {{ message }}
@@ -18,54 +18,16 @@
 
 <h1 class="text-center">Gerenciamento de Ativos</h1>
 
-<table class="table table-striped">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Nome Ativo</th>
-        <th scope="col">Departamento</th>
-        <th scope="col">Handle</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th scope="row">1</th>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
-      </tr>
-      <tr>
-        <th scope="row">2</th>
-        <td>Jacob</td>
-        <td>Thornton</td>
-        <td>@fat</td>
-      </tr>
-      <tr>
-        <th scope="row">3</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
-      </tr>
-      <tr>
-        <th scope="row">3</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
-      </tr>
-      <tr>
-        <th scope="row">3</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
-      </tr>
-      <tr>
-        <th scope="row">3</th>
-        <td>Larry</td>
-        <td>the Bird</td>
-        <td>@twitter</td>
-      </tr>
-    </tbody>
-  </table>
+<div class="grid">
+  <h3 class="text-center"><i>Hardwares</i></h3>
+  <a class="btn btn-primary" href="/add_hardware">Adicionar <i>Hardware</i></a>
+  <a class="btn btn-primary" href="/all_hardwares">Ver todos os <i>Hardwares</i></a>
+  <br>
+
+  <h3 class="text-center"><i>Softwares</i></h3>
+  <a class="btn btn-primary" href="/add_software">Adicionar <i>Software</i></a>
+  <a class="btn btn-primary" href="/all_softwares">Ver todos os <i>Softwares</i></a>
+</div>
 
 
 
