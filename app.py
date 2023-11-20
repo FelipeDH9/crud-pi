@@ -66,6 +66,7 @@ REVISOES_HARDWARE = [
     'Manutenção',
     'Limpeza',
     'Movimentação',
+    'Mudança de departamento',
     'Obsolescência'
 ]
 
@@ -149,7 +150,7 @@ def add_hardware():
 
 
         #  VALIDAR SE O price POSSUI 7 DIGITOS NUMERICOS, SE É UM float E SE EXISTE
-        if not price or not number_length(price, 8):
+        if not price or not number_length(price, 8) or not is_decimal(price):
             flash("Preço inicial do ativo deve ser um número decimal positivo com no máximo 7 dígitos!", "warning")
             return render_template("add_hardware.html", departments=DEPARTMENTS_LIST)
 
@@ -175,6 +176,341 @@ def add_hardware():
     else: #GET
         return render_template("add_hardware.html", departments=DEPARTMENTS_LIST)
     
+# HARDWARES
+@app.route("/all_hardwares")
+def all_hardwares():
+    # consultar todos os hardwares
+    connection = conectarBD("localhost", "root", "root", "empresa")
+    cursor = connection.cursor() 
+
+    cursor.execute("SELECT * FROM hardwares ORDER BY patrimonio") 
+    results = cursor.fetchall() 
+
+    cursor.close()     
+    connection.close() 
+
+    # converter a lista de tuplas em uma lista de listas
+    all_hardwares = list(map(list, results))
+
+
+    # consultar todas as revisões dos hardwares
+    connection = conectarBD("localhost", "root", "root", "empresa")
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT hardwares_id, SUM(valor) FROM revisoes_hardware GROUP BY hardwares_id")
+    sum_revisoes = cursor.fetchall()
+    cursor.close()     
+    connection.close() 
+
+
+    for hardware in all_hardwares:
+        hardware[5] = float(hardware[5])
+    # INSERIR NA LISTA DE LISTAS DOS HARDWARES O CUSTO TOTAL DE REVISÕES DELE
+    for hardware in all_hardwares:
+        for sum_rev in sum_revisoes:
+            if int(sum_rev[0]) == int(hardware[0]):
+                hardware.append(float(sum_rev[1]))
+
+    return render_template("all_hardwares.html", all_hardwares=all_hardwares, sum_revisoes=sum_revisoes)
+
+
+@app.route("/delete_hardware", methods=["POST"])
+def delete_hardware():
+    hardware_id = request.form.get("hardware_id")
+    # hardware_id = '99'
+
+    # validar se o hardware_id existe, se é um digito e se é maior que 0
+    if not hardware_id or not hardware_id.isdigit() or int(hardware_id) <= 0:
+        flash("1 Hardware não encontrado!", "danger")
+        return redirect("/all_hardwares")
+
+    # conectar com o banco de dados e pegar todos os hardwares
+    # connection = conectarBD("localhost", "root", "root", "empresa")
+    # cursor = connection.cursor() #Cursor para comunicação com o banco
+    # cursor.execute("SELECT id FROM hardwares")
+    # results = cursor.fetchall()
+    # cursor.close()
+    # connection.close()
+    
+    # # converter list de tuplas em lista de listas
+    # results2 = list(map(list, results))
+    # hardwares_id = []
+
+    # # converter lista de listas em uma lista de ints
+    # for hardware in results2:
+    #     hardwares_id.append(int(hardware[0]))
+    
+    # # validar se o hardware escolhido está no banco de dados
+    # if int(hardware_id) not in hardwares_id:
+    #     flash("Hardware não encontrado 2!", "danger")
+    #     return redirect("/all_hardwares")
+
+    # validar se o hardware escolhido está no banco de dados
+
+    connection = conectarBD("localhost", "root", "root", "empresa")
+    cursor = connection.cursor() 
+    cursor.execute("SELECT id FROM hardwares WHERE id = %s", (hardware_id,))
+    results = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+
+    # validar se a quantidade de tuplas de resultado da busca no banco de dados é maior que 1, ou seja, se o dado existe
+    if len(results) != 1:
+        flash("2 Hardware não encontrado!", "danger")
+        return redirect("/all_hardwares")
+
+    else:
+        connection = conectarBD("localhost", "root", "root", "empresa")
+        cursor = connection.cursor() 
+        cursor.execute("DELETE FROM hardwares WHERE id = %s", (hardware_id,))
+        results = cursor.fetchall()
+        connection.commit()
+        cursor.close()
+        connection.close()
+
+        flash("Hardware deletado", "warning")
+        return redirect('/all_hardwares') 
+     
+
+@app.route("/edit_hardware", methods=["POST", "GET"])
+def edit_hardware():
+    if request.method == 'POST':
+        hardware_id = request.form.get("hardware_id")
+        description = request.form.get("description").capitalize().strip()
+        dt_buy = request.form.get("dt_buy")
+        dt_pr_rev = request.form.get("dt_pr_rev")
+        price = request.form.get("price")
+        department = request.form.get("department")
+
+        # VALIDAR SE o ID EXISTE
+        if not hardware_id or int(hardware_id) < 1:
+            flash("3 Hardware não encontrado 1!", "danger")
+            return redirect("/all_hardwares")
+        
+        
+        connection = conectarBD("localhost", "root", "root", "empresa")
+        cursor = connection.cursor() 
+
+        #Realizando um select para mostrar todas as linhas e colunas da tabela
+        cursor.execute("SELECT * FROM hardwares WHERE id = %s", (hardware_id,)) 
+        results = cursor.fetchall() 
+        # return render_template("mes.html", mes=f'{dt_buy}: {results[0][3]}')
+
+        counter = 0
+        
+        # VALIDAR SE DT_BUY EXISTE E ESTÁ EM FORMATO DATE
+        if dt_buy and not is_date(dt_buy):
+            cursor.close() 
+            connection.close()
+            flash("Data de compra inválida, ela deve ser em formato de data!", "warning")
+            return redirect("/all_hardwares")
+
+        # VALIDAR SE A DATA DE COMPRA NOVA É ANTERIOR A DATA DE REVISÃO SALVA
+        elif dt_buy and convert_to_date(dt_buy) > results[0][4]:
+            cursor.close() 
+            connection.close()
+            flash("Data de compra inválida, ela deve ser anterior a data de revisão!", "warning")
+            return redirect("/all_hardwares")
+
+        # VALIDAR SE DT_PR_REV EXISTE E ESTÁ EM FORMATO DATE
+        elif dt_pr_rev and not is_date(dt_pr_rev):
+            cursor.close() 
+            connection.close()
+            flash("Data da próxima revisão inválida, ela deve ser em formato de data!", "warning")
+            return redirect("/all_hardwares")
+
+        #  VALIDAR SE A DATA DA PRÓXIMA REVISÃO É POSTERIOR A DATA DE COMPRA SALVA
+        elif dt_pr_rev and convert_to_date(dt_pr_rev) < results[0][3]:
+            dt_pr_rev = convert_to_date(dt_pr_rev)
+            flash("Data da próxima revisão inválida, ela deve ser posterior a data de compra!", "warning")
+            return redirect("/all_hardwares")
+        
+        # validar se a data de compra nova existe e é anterior a data de previsão nova
+        elif dt_buy and dt_buy < dt_pr_rev:
+            flash("Data da próxima revisão inválida, ela deve ser posterior a data de compra!", "warning")
+            return redirect("/all_hardwares")
+
+        # validar se o valor inicital do ativo é possui 7 dígitos numéricos
+        elif price and not number_length(price, 8):
+            flash("Preço inicial do ativo deve ser um número decimal positivo com no máximo 7 dígitos!", "warning")
+            return redirect("/all_hardwares")
+        
+        #  VALIDAR SE O department ESTA DENTRO DA LISTA DE DEPARTAMENTOS DEFINIDA
+        elif department not in DEPARTMENTS_LIST or not department:
+            flash("Departamento não encontrado", "danger")
+            return redirect("/add_hardware")
+        
+        # SE PASSAR DE TODAS AS VALIDAÇÕES 
+        else:               
+            # ver se a descricao escrita é diferente da que esta no banco de dados, caso seja, então alterar e somar no contador de edições
+            if description and description != results[0][2]:
+                cursor.execute("UPDATE hardwares SET descricao = %s WHERE id = %s", (description, hardware_id,)) 
+                counter += 1
+
+            #  validar se a data de compra nova é diferente da salva
+            if dt_buy:
+                cursor.execute("UPDATE hardwares SET dt_compra = %s WHERE id = %s", (dt_buy, hardware_id,)) 
+                counter += 1
+
+            # se dt_pr_rev existe, alterar
+            if dt_pr_rev:
+                cursor.execute("UPDATE hardwares SET dt_pr_rev = %s WHERE id = %s", (dt_pr_rev, hardware_id,)) 
+                counter += 1
+
+            # se price existe, alterar
+            if price:
+                cursor.execute("UPDATE hardwares SET valor_inicial = %s WHERE id = %s", (price, hardware_id,)) 
+                counter += 1
+
+            # VALIDAÇÃO PARA VER SE DEPARTAMENTO ESTÁ NA LISTA DE DEPARTAMENTOS PADRÃO 
+            if department and department != results[0][6]:
+                cursor.execute("UPDATE hardwares SET departamento = %s WHERE id = %s", (department, hardware_id,)) 
+                counter += 1
+
+            connection.commit()
+            cursor.close() 
+            connection.close()
+
+            if counter > 0:
+                flash("Hardware editado!", "success")
+                return redirect("/all_hardwares")
+            else:
+                flash("Nenhuma edição foi feita!", "success")
+                return redirect("/all_hardwares")
+        
+
+    else: #GET
+        hardware_id = request.args.get("hardware_id")
+
+        # validar se o hardware_id existe, se é um digito e se é maior que 0
+        if not hardware_id or not hardware_id.isdigit() or int(hardware_id) <= 0:
+            flash("4 Hardware não encontrado!", "danger")
+            return redirect("/all_hardwares")
+        
+        else:
+        
+            # validar se o hardware escolhido está no banco de dados
+            connection = conectarBD("localhost", "root", "root", "empresa")
+            cursor = connection.cursor() 
+            cursor.execute("SELECT * FROM hardwares WHERE id = %s", (hardware_id,))
+            hardware = cursor.fetchall()
+            cursor.close()
+            connection.close()
+
+
+            # validar se a quantidade de tuplas de resultado da busca no banco de dados é maior que 1, ou seja, se o dado existe
+            if len(hardware) != 1:
+                flash("5 Hardware não encontrado!", "danger")
+                return redirect("/all_hardwares")
+            
+
+            return render_template("edit_hardware.html", hardware=hardware, departments=DEPARTMENTS_LIST)
+
+
+@app.route('/add_rev_hardware', methods=["POST","GET"])
+def add_rev_hardware():
+    if request.method == "POST":
+        hardware_id = request.form.get("hardware_id")
+        type_rev = request.form.get("type_rev")
+        dt_rev = request.form.get("dt_rev")
+        price = request.form.get("price")
+        infos = request.form.get("infos")
+        department = request.form.get("department")  
+        
+
+        connection = conectarBD("localhost", "root", "root", "empresa")
+        cursor = connection.cursor() 
+        cursor.execute("SELECT * FROM hardwares WHERE id = %s", (hardware_id,)) 
+        hardware = cursor.fetchall() 
+        cursor.close() 
+        connection.close()
+
+        if type_rev:
+            type_rev = type_rev.strip().capitalize()
+
+        if not price:
+            price = 0
+        
+        if not infos:
+            infos = ''
+
+        # validar se o hardware_id existe, se é um digito e se é maior que 0, e se ele existe no bando de dados
+        if not hardware_id or not hardware_id.isdigit() or int(hardware_id) <= 0 or not hardware:
+            flash("6 Hardware não encontrado!", "danger")
+            return redirect('/all_hardwares')
+
+        # validar se o tipo de rev está dentro da lista
+        elif type_rev not in REVISOES_HARDWARE or not type_rev:
+            flash("Tipo de revisão não encontrada!", "danger")
+            return redirect('/all_hardwares')
+
+        # VALIDAR SE A dt_buy EXISTE E SE ESTÁ NO FORMATO DE DATA
+        elif not dt_rev or not is_date(dt_rev):
+            flash("Informe a data da revisão!", "warning")
+            return redirect('/all_hardwares')
+        
+        # verificar se dt_rev é posterior a data de compra salva no banco de dados
+        elif dt_rev and convert_to_date(dt_rev) < hardware[0][3]:
+            dt_rev = convert_to_date(dt_rev)
+            flash("Data da revisão inválida, ela deve ser posterior a data de compra!", "warning")
+            return redirect("/all_hardwares")
+        
+        #  VALIDAR SE O price POSSUI 7 DIGITOS NUMERICOS, SE É UM float E SE EXISTE
+        elif not number_length(price, 8) or not is_decimal(price):
+        # elif not price or not number_length(price, 8):
+            flash("Preço da revisão deve ser um número decimal positivo com no máximo 7 dígitos!", "warning")
+            return redirect('/all_hardwares')
+
+        # validar se o tipo de rev escolhido for 'mudandça de departamento', tem que ter um valor no department
+        elif type_rev == 'Mudança de departamento' and not department:
+            flash("Para Mudar de departamento, é necessário informar o novo departamento!", "warning")
+            return redirect('/all_hardwares')
+        
+        
+        else:
+            # inserir no banco de dados
+            connection = conectarBD("localhost", "root", "root", "empresa")
+            cursor = connection.cursor() 
+            sql = "INSERT INTO revisoes_hardware (data, valor, tipo_revisao, infos_adicionais, hardwares_id) VALUES (%s, %s, %s, %s, %s)"
+            data = (dt_rev, price, type_rev, infos, hardware_id)
+            cursor.execute(sql,data) 
+            connection.commit()
+            cursor.close() 
+            connection.close()
+            
+            flash(f"Ativo adicionada!", "success")
+            return redirect("/all_hardwares")
+
+
+
+    else: #GET
+        hardware_id = request.args.get("hardware_id")
+        
+        # validar se o hardware_id existe, se é um digito e se é maior que 0
+        if not hardware_id or not hardware_id.isdigit() or int(hardware_id) <= 0:
+            flash("7 Hardware não encontrado!", "danger")
+            return redirect("/add_rev_hardware")
+        
+        else:
+            # validar se o hardware escolhido está no banco de dados
+            connection = conectarBD("localhost", "root", "root", "empresa")
+            cursor = connection.cursor() 
+            cursor.execute("SELECT * FROM hardwares WHERE id = %s", (hardware_id,))
+            hardware = cursor.fetchall()
+            cursor.close()
+            connection.close()
+
+
+            # validar se a quantidade de tuplas de resultado da busca no banco de dados é maior que 1, ou seja, se o dado existe
+            if len(hardware) != 1:
+                flash("8 Hardware não encontrado!", "danger")
+                return redirect("/add_rev_hardware")
+            
+
+            return render_template("add_rev_hardware.html", hardware=hardware,  type_revs=REVISOES_HARDWARE, departments=DEPARTMENTS_LIST)
+
+# SOFTWARES
 # TODO
 @app.route("/add_software", methods=["POST","GET"])
 def add_software():
@@ -189,15 +525,15 @@ def add_software():
 
         if not key:
             flash("Digite a chave de lincença!", "warning")
-            return redirect("/add_software")
+            return render_template("add_software.html", departments=DEPARTMENTS_LIST)
         
         if not name:
             flash("Digite o nome do software!", "warning")
-            return redirect("/add_software")
+            return render_template("add_software.html", departments=DEPARTMENTS_LIST)
         
         if not description:
             flash("Digite uma breve descrição do software!", "warning")
-            return redirect("/add_software")
+            return render_template("add_software.html", departments=DEPARTMENTS_LIST)
         
         # VALIDAR SE A dt_buy EXISTE E SE ESTÁ NO FORMATO DE DATA
         if not dt_buy or not is_date(dt_buy):
@@ -267,47 +603,6 @@ def add_software():
         return render_template("add_software.html", hardwares=hardwares)
 
 
-@app.route("/all_hardwares", methods=["POST","GET"])
-def all_hardwares():
-    if request.method == "POST":
-        pass
-
-    else: #GET
-        # consultar todos os hardwares
-        connection = conectarBD("localhost", "root", "root", "empresa")
-        cursor = connection.cursor() 
-
-        cursor.execute("SELECT * FROM hardwares ORDER BY patrimonio") 
-        results = cursor.fetchall() 
-
-        cursor.close()     
-        connection.close() 
-
-        # converter a lista de tuplas em uma lista de listas
-        all_hardwares = list(map(list, results))
-
-
-        # consultar todas as revisões dos hardwares
-        connection = conectarBD("localhost", "root", "root", "empresa")
-        cursor = connection.cursor()
-
-        cursor.execute("SELECT hardwares_id, SUM(valor) FROM revisoes_hardware GROUP BY hardwares_id")
-        sum_revisoes = cursor.fetchall()
-        cursor.close()     
-        connection.close() 
-
-
-        for hardware in all_hardwares:
-            hardware[5] = float(hardware[5])
-        # INSERIR NA LISTA DE LISTAS DOS HARDWARES O CUSTO TOTAL DE REVISÕES DELE
-        for hardware in all_hardwares:
-            for sum_rev in sum_revisoes:
-                if int(sum_rev[0]) == int(hardware[0]):
-                    hardware.append(float(sum_rev[1]))
-
-        return render_template("all_hardwares.html", all_hardwares=all_hardwares, sum_revisoes=sum_revisoes)
-
-
 @app.route("/all_softwares", methods=["POST","GET"])
 def all_softwares():
     if request.method == "POST":
@@ -322,205 +617,6 @@ def all_softwares():
         cursor.close()     
         connection.close() 
         return render_template("all_softwares.html", all_softwares=all_softwares)
-
-
-@app.route("/delete_hardware", methods=["POST"])
-def delete_hardware():
-    hardware_id = request.form.get("hardware_id")
-    # hardware_id = '99'
-
-    # validar se o hardware_id existe, se é um digito e se é maior que 0
-    if not hardware_id or not hardware_id.isdigit() or int(hardware_id) <= 0:
-        flash("Hardware não encontrado 1!", "danger")
-        return redirect("/all_hardwares")
-
-    # conectar com o banco de dados e pegar todos os hardwares
-    # connection = conectarBD("localhost", "root", "root", "empresa")
-    # cursor = connection.cursor() #Cursor para comunicação com o banco
-    # cursor.execute("SELECT id FROM hardwares")
-    # results = cursor.fetchall()
-    # cursor.close()
-    # connection.close()
-    
-    # # converter list de tuplas em lista de listas
-    # results2 = list(map(list, results))
-    # hardwares_id = []
-
-    # # converter lista de listas em uma lista de ints
-    # for hardware in results2:
-    #     hardwares_id.append(int(hardware[0]))
-    
-    # # validar se o hardware escolhido está no banco de dados
-    # if int(hardware_id) not in hardwares_id:
-    #     flash("Hardware não encontrado 2!", "danger")
-    #     return redirect("/all_hardwares")
-
-    # validar se o hardware escolhido está no banco de dados
-
-    connection = conectarBD("localhost", "root", "root", "empresa")
-    cursor = connection.cursor() 
-    cursor.execute("SELECT id FROM hardwares WHERE id = %s", (hardware_id,))
-    results = cursor.fetchall()
-    cursor.close()
-    connection.close()
-
-
-    # validar se a quantidade de tuplas de resultado da busca no banco de dados é maior que 1, ou seja, se o dado existe
-    if len(results) != 1:
-        flash("Hardware não encontrado!", "danger")
-        return redirect("/all_hardwares")
-
-    else:
-        connection = conectarBD("localhost", "root", "root", "empresa")
-        cursor = connection.cursor() 
-        cursor.execute("DELETE FROM hardwares WHERE id = %s", (hardware_id,))
-        results = cursor.fetchall()
-        connection.commit()
-        cursor.close()
-        connection.close()
-
-        flash("Hardware deletado", "warning")
-        return redirect('/all_hardwares') 
-     
-
-@app.route("/edit_hardware", methods=["POST", "GET"])
-def edit_hardware():
-    if request.method == 'POST':
-        hardware_id = request.form.get("hardware_id")
-        description = request.form.get("description").capitalize().strip()
-        dt_buy = request.form.get("dt_buy")
-        dt_pr_rev = request.form.get("dt_pr_rev")
-        price = request.form.get("price")
-        department = request.form.get("department")
-
-        # VALIDAR SE o ID EXISTE
-        if not hardware_id or int(hardware_id) < 1:
-            flash("Hardware não encontrado 1!", "danger")
-            return redirect("/all_hardwares")
-        
-        
-        connection = conectarBD("localhost", "root", "root", "empresa")
-        cursor = connection.cursor() 
-
-        #Realizando um select para mostrar todas as linhas e colunas da tabela
-        cursor.execute("SELECT * FROM hardwares WHERE id = %s", (hardware_id,)) 
-        results = cursor.fetchall() 
-        # return render_template("mes.html", mes=f'{dt_buy}: {results[0][3]}')
-
-        counter = 0
-        
-        # VALIDAR SE DT_BUY EXISTE E ESTÁ EM FORMATO DATE
-        if dt_buy and not is_date(dt_buy):
-            cursor.close() 
-            connection.close()
-            flash("Data de compra inválida, ela deve ser em formato de data!", "warning")
-            return redirect("/all_hardwares")
-
-        # VALIDAR SE A DATA DE COMPRA NOVA É ANTERIOR A DATA DE REVISÃO SALVA
-        elif dt_buy and convert_to_date(dt_buy) > results[0][4]:
-            cursor.close() 
-            connection.close()
-            flash("Data de compra inválida, ela deve ser anterior a data de revisão!", "warning")
-            return redirect("/all_hardwares")
-
-        # VALIDAR SE DT_PR_REV EXISTE E ESTÁ EM FORMATO DATE
-        elif dt_pr_rev and not is_date(dt_pr_rev):
-            cursor.close() 
-            connection.close()
-            flash("Data da próxima revisão inválida, ela deve ser em formato de data!", "warning")
-            return redirect("/all_hardwares")
-
-        #  VALIDAR SE A DATA DA PRÓXIMA REVISÃO É POSTERIOR A DATA DE COMPRA SALVA
-        elif dt_pr_rev and convert_to_date(dt_pr_rev) < results[0][3]:
-            dt_pr_rev = convert_to_date(dt_pr_rev)
-            flash("Data da próxima revisão inválida, ela deve ser posterior a data de compra!", "warning")
-            return redirect("/all_hardwares")
-        
-        # validar se a data de compra nova existe e é anterior a data de previsão nova
-        elif dt_buy and dt_buy < dt_pr_rev:
-            flash("Data da próxima revisão inválida, ela deve ser posterior a data de compra!", "warning")
-            return redirect("/all_hardwares")
-
-        # validar se o valor inicital do ativo é possui 7 dígitos numéricos
-        elif price and not number_length(price, 8):
-            flash("Preço inicial do ativo deve ser um número decimal positivo com no máximo 7 dígitos!", "warning")
-            return redirect("/all_hardwares")
-        
-        #  VALIDAR SE O department ESTA DENTRO DA LISTA DE DEPARTAMENTOS DEFINIDA
-        elif department not in DEPARTMENTS_LIST or not department:
-            flash("Departamento não encontrado", "danger")
-            return redirect("/add_hardware")
-        
-        # SE PASSAR DE TODAS AS VALIDAÇÕES 
-        else:     
-            # return render_template("mes.html", mes=results)
-            
-            # ver se a descricao escrita é diferente da que esta no banco de dados, caso seja, então alterar e somar no contador de edições
-            if description and description != results[0][2]:
-                cursor.execute("UPDATE hardwares SET descricao = %s WHERE id = %s", (description, hardware_id,)) 
-                counter += 1
-
-            #  validar se a data de compra nova é diferente da salva
-            if dt_buy:
-                cursor.execute("UPDATE hardwares SET dt_compra = %s WHERE id = %s", (dt_buy, hardware_id,)) 
-                counter += 1
-
-            # se dt_pr_rev existe, alterar
-            if dt_pr_rev:
-                cursor.execute("UPDATE hardwares SET dt_pr_rev = %s WHERE id = %s", (dt_pr_rev, hardware_id,)) 
-                counter += 1
-
-            # se price existe, alterar
-            if price:
-                cursor.execute("UPDATE hardwares SET valor_inicial = %s WHERE id = %s", (price, hardware_id,)) 
-                counter += 1
-
-            # VALIDAÇÃO PARA VER SE DEPARTAMENTO ESTÁ NA LISTA DE DEPARTAMENTOS PADRÃO 
-            if department and department != results[0][6]:
-                cursor.execute("UPDATE hardwares SET departamento = %s WHERE id = %s", (department, hardware_id,)) 
-                counter += 1
-
-            connection.commit()
-            cursor.close() 
-            connection.close()
-
-            if counter > 0:
-                flash("Hardware editado!", "success")
-                return redirect("/all_hardwares")
-            else:
-                flash("Nenhuma edição foi feita!", "success")
-                return redirect("/all_hardwares")
-        
-
-    else: #GET
-        hardware_id = request.args.get("hardware_id")
-
-        # validar se o hardware_id existe, se é um digito e se é maior que 0
-        if not hardware_id or not hardware_id.isdigit() or int(hardware_id) <= 0:
-            flash("Hardware não encontrado!", "danger")
-            return redirect("/all_hardwares")
-        
-        else:
-        
-            # validar se o hardware escolhido está no banco de dados
-            connection = conectarBD("localhost", "root", "root", "empresa")
-            cursor = connection.cursor() 
-            cursor.execute("SELECT * FROM hardwares WHERE id = %s", (hardware_id,))
-            hardware = cursor.fetchall()
-            cursor.close()
-            connection.close()
-
-
-            # validar se a quantidade de tuplas de resultado da busca no banco de dados é maior que 1, ou seja, se o dado existe
-            if len(hardware) != 1:
-                flash("Hardware não encontrado!", "danger")
-                return redirect("/all_hardwares")
-            
-
-            return render_template("edit_hardware.html", hardware=hardware, departments=DEPARTMENTS_LIST)
-
-
-        
     
 
 if __name__ =='__main__':

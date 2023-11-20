@@ -1,0 +1,98 @@
+{% extends "layout.html" %} 
+
+{% block title%}{% endblock%} 
+{% block main %} 
+{% for category, message in get_flashed_messages(with_categories=true) %}
+
+<div
+  class="alert alert-{{ category }} alert-dismissible fade show"
+  role="alert"
+>
+  {{ message }}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+{% endfor %}
+
+<h1 class="text-center">Adicione Revisão ao <i>Hardware</i></h1>
+<h3 class="text-center">Campos obrigatórios!</h3>
+
+<form action="/add_rev_hardware" method="post">
+
+  <input name="hardware_id" type="hidden" value="{{ hardware[0][0] }}" />
+  
+
+  <div class="row">
+    <div class="col">
+      <label class="type_rev" for="type_rev">Escolha o tipo de revisão:</label>
+      <select class="custom-select" id="type_rev" name="type_rev" >
+        <option selected disabled>Selecione</option>
+        {% for type_rev in type_revs %}
+        <option value="{{type_rev}}">{{ type_rev }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+
+  <div class="row">
+    <div class="col">
+      <label for="dt_rev">Data de revisão</label>
+      <input
+        class="form-control"
+        id="dt_rev"
+        name="dt_rev"
+        type="date"
+      />
+    </div>
+
+  </div>
+
+
+  <h3 class="text-center">Campos opicionais!</h3>
+  <div class="row">
+    <div class="col">
+      <label for="price">Valor da revisão se tiver. (Deve conter no máximo 7 dígitos numéricos!)</label>
+      <input
+        class="form-control"
+        id="price"
+        name="price"
+        placeholder="#####.##"
+        type="number"
+        step="0.01"
+        max="99999.99"
+        min="0"
+        />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <label for="infos">Informações adicionais da revisão (deve conter no máximo 45 dígitos alfanuméricos!)</label>
+      <input
+        class="form-control"
+        id="infos"
+        name="infos"
+        placeholder="..."
+        type="text"
+        
+      />
+    </div>
+  </div>
+
+  <div class="col">
+    <label class="department" for="department">Em caso de <i>Mudança de departamento</i>, selecione o novo departamento:</label>
+      <select class="custom-select" id="department" name="department" >
+        <option selected disabled>Selecione</option>
+        {% for department in departments %}
+        <option value="{{department}}">{{ department }}</option>
+        {% endfor %}
+      </select>
+  </div>
+
+  <button type="submit" class="add-btn btn btn-primary">Adicionar revisão</button>
+</form>
+
+{% endblock %}
