@@ -1,0 +1,111 @@
+{% extends "layout.html" %} 
+
+{% block title%}{% endblock%} 
+{% block main %} 
+{% for category, message in get_flashed_messages(with_categories=true) %}
+
+<div
+  class="alert alert-{{ category }} alert-dismissible fade show"
+  role="alert"
+>
+  {{ message }}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+{% endfor %}
+
+<h2 class="text-center">Filtros</h2>
+
+
+{% if not all_hardwares %}
+
+<a class="text-center" href="/add_hardware"><h2>Cadastre seus hardwares</h2></a>
+{% else %}
+
+<!-- INPUTS DE FILTRAGEM -->
+<div class="row">
+  <div class="col"> 
+    <label for="patrimony_search">Filtrar patrimônio</label>
+    <input class="form-control" type="number" id="patrimony_search" onkeyup="filterByPatrimony()" placeholder="..." min="0" max="999999" step="1">
+  </div>
+
+  <div class="col">
+    <label for="description_search">Filtrar descrição</label>
+    <input class="form-control" type="text" id="description_search" onkeyup="filterByDescription()" placeholder="...">
+  </div>
+
+  <div class="col">
+    <label for="department_search">Filtrar departamento</label>
+    <input class="form-control" type="text" id="department_search" onkeyup="filterByDepartment()" placeholder="...">
+  </div>
+
+</div>
+
+<div class="row">
+  <div class="col"> 
+    <label for="buy_search">Filtrar pela data de compra</label>
+    <input class="form-control" type="date" id="buy_search" onkeyup="filterBuyData()">
+  </div>
+
+  <div class="col">
+    <label for="buy_search">Filtrar pela data da próxima revisão</label>
+    <input class="form-control" type="date" id="rev_search" onkeyup="filterRevData()">
+  </div>
+
+</div>
+
+
+<h2 class="text-center">Hardwares Cadastrados</h2>
+
+
+<table class="table table-striped" id='hardwares'>
+  <thead>
+    <tr>
+      <th scope="col">Patrimônio</th>
+      <th scope="col">Descrição</th>
+      <th scope="col">Departamento</th>
+      <th scope="col">Data de compra</th>
+      <th scope="col">Data da próxima revisão</th>
+      <th scope="col">Valor inicial do ativo</th>
+      <th scope="col">Valor das revisões</th>
+      <th scope="col">Valor total do ativo</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for hardware in all_hardwares %}
+    
+      <tr>
+        <td scope="row">{{ hardware[1] }}</td>
+        <td>{{  hardware[2]  }}</td>
+        <td>{{  hardware[6]  }}</td>
+        <td>{{  hardware[3]  }}</td>
+        <td>{{  hardware[4]  }}</td>
+        <td>{{  hardware[5] | money_format }}</td>
+
+        {% if hardware[7] %}
+        <td>{{  ( hardware[7]) | money_format  }}</td>
+        {% else %}
+        <td>{{  0 | money_format  }}</td>
+        {% endif %}
+
+        {% if hardware[7] %}
+        <td>{{  (hardware[5] + hardware[7]) | money_format  }}</td>
+        {% else %}
+        <td>{{  hardware[5] | money_format  }}</td>
+        {% endif %}
+
+
+      </tr>
+    {% endfor %}
+    
+  </tbody>
+</table>
+{% endif %}
+
+
+
+
+{% endblock %}

@@ -26,8 +26,7 @@ def criarBD(host, usuario, senha, DB):
     return False
 
 
-
-
+# FUNÇÃO PARA CONECTAR AO BANCO DE DADOS
 def conectarBD(host, usuario, senha, DB):
     try:
         connection=mysql.connector.connect( #Informando dados de conexão
@@ -39,21 +38,6 @@ def conectarBD(host, usuario, senha, DB):
         return connection
     except Error:
         pass
-
-
-# def read_BD(conn):
-#     connection = conn #Recebe a conexão estabelecida com o banco
-#     cursor = connection.cursor() #Cursor para comunicação com o banco
-
-#     #Realizando um select para mostrar todas as linhas e colunas da tabela
-#     cursor.execute("SELECT * FROM CLIENTE") #Executa o comando SQL
-#     results = cursor.fetchall() #Obtendo todas as linhas geradas pelo select
-#     cursor.close() #Fecha o cursor
-#     connection.close() #Fecha a conexão com o banco
-
-#     for result in results: #Percorrer a lista com as linhas geradas pelo SELECT
-#         print(result) #Imprime cada linha gerada pelo SELECT
-
 
 
 # FUNÇÃO BASE QUE CRIA A TABELA DE ACORDO COM O ARGUMENTO PASSADO
@@ -75,42 +59,45 @@ def criarTabela(host, usuario, senha, DB, tabela):
         
     elif tabela == 'softwares':
         cursor.execute(f'''CREATE TABLE IF NOT EXISTS {tabela} (
-            id INT auto_increment primary key,
-            nome varchar(45) NOT NULL,
-            chave_licenca varchar(45) NOT NULL,
-            descricao varchar(45) NOT NULL,
-            dt_compra DATE NOT NULL, 
-            dt_pr_rev DATE NOT NULL, 
-            valor_inicial DECIMAL(7,2) NOT NULL, 
-            hardwares_id INT NOT NULL,
-            FOREIGN KEY (hardwares_id) REFERENCES hardwares (id)
-            )
-            ''')
+        id INT auto_increment primary key,
+        nome varchar(45) NOT NULL,
+        chave_licenca varchar(45) NOT NULL,
+        descricao varchar(45) NOT NULL,
+        dt_compra DATE NOT NULL, 
+        dt_pr_rev DATE NOT NULL, 
+        valor_inicial DECIMAL(7,2) NOT NULL, 
+        hardwares_id INT NOT NULL,
+        FOREIGN KEY (hardwares_id) REFERENCES hardwares (id)
+        ON DELETE CASCADE
+        )
+        ''')
         
     elif tabela == 'revisoes_hardware':
         cursor.execute(f'''CREATE TABLE IF NOT EXISTS {tabela} (
-                id INT auto_increment primary key,
-                data DATE NOT NULL, 
-                valor DECIMAL(7,2) NOT NULL, 
-                tipo_revisao VARCHAR(45) NOT NULL,
-                infos_adicionais VARCHAR(45),
-                hardwares_id INT NOT NULL,
-                FOREIGN KEY (hardwares_id) REFERENCES hardwares (id)
-                )
-                ''')
-        
+            id INT auto_increment primary key,
+            data DATE NOT NULL, 
+            valor DECIMAL(7,2) NOT NULL, 
+            tipo_revisao VARCHAR(45) NOT NULL,
+            infos_adicionais VARCHAR(45),
+            hardwares_id INT NOT NULL,
+            FOREIGN KEY (hardwares_id) REFERENCES hardwares (id)
+            ON DELETE CASCADE
+            )
+            ''')
+    
         
     elif tabela == 'revisoes_software':
         cursor.execute(f'''CREATE TABLE IF NOT EXISTS {tabela} (
-                id INT auto_increment primary key,
-                data DATE NOT NULL, 
-                valor DECIMAL(7,2) NOT NULL, 
-                tipo_revisao VARCHAR(45) NOT NULL,
-                infos_adicionais VARCHAR(45),
-                softwares_id INT NOT NULL,
-                FOREIGN KEY (softwares_id) REFERENCES softwares (id)
-                )
-                ''')
+            id INT auto_increment primary key,
+            data DATE NOT NULL, 
+            valor DECIMAL(7,2) NOT NULL, 
+            tipo_revisao VARCHAR(45) NOT NULL,
+            infos_adicionais VARCHAR(45),
+            softwares_id INT NOT NULL,
+            FOREIGN KEY (softwares_id) REFERENCES softwares (id)
+            ON DELETE CASCADE
+            )
+            ''')
 
     else:
         pass

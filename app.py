@@ -36,18 +36,24 @@ def number_length(number, n):
     else:
         return True 
 
+def money_format(value):
+    return f"R${value:,.2f}"
+
+
+app.jinja_env.filters["money_format"] = money_format
 
 DEPARTMENTS_LIST = [
     "Atendimento ao Cliente",
     "Contabilidade",
     "Finanças",
     "Marketing",
+    "Obsoleto",
     "Relações Empresariais",
     "Recursos Humanos",
     "Reserva",
     "Sala de Reuniões",
     "TI",
-    "Vendas",
+    "Vendas"
 ]
 
 REVISOES_HARDWARE = [
@@ -254,6 +260,62 @@ def add_software():
         connection.close() 
         return render_template("add_software.html", hardwares=hardwares)
 
+
+@app.route("/all_hardwares", methods=["POST","GET"])
+def all_hardwares():
+    if request.method == "POST":
+        pass
+
+    else: #GET
+        # consultar todos os hardwares
+        connection = conectarBD("localhost", "root", "root", "empresa")
+        cursor = connection.cursor() 
+
+        cursor.execute("SELECT * FROM hardwares ORDER BY patrimonio") 
+        results = cursor.fetchall() 
+
+        cursor.close()     
+        connection.close() 
+
+        # converter a lista de tuplas em uma lista de listas
+        all_hardwares = list(map(list, results))
+
+
+        # consultar todas as revisões dos hardwares
+        connection = conectarBD("localhost", "root", "root", "empresa")
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT hardwares_id, SUM(valor) FROM revisoes_hardware GROUP BY hardwares_id")
+        sum_revisoes = cursor.fetchall()
+        cursor.close()     
+        connection.close() 
+
+
+        for hardware in all_hardwares:
+            hardware[5] = float(hardware[5])
+        # INSERIR NA LISTA DE LISTAS DOS HARDWARES O CUSTO TOTAL DE REVISÕES DELE
+        for hardware in all_hardwares:
+            for sum_rev in sum_revisoes:
+                if int(sum_rev[0]) == int(hardware[0]):
+                    hardware.append(float(sum_rev[1]))
+
+        return render_template("all_hardwares.html", all_hardwares=all_hardwares, sum_revisoes=sum_revisoes)
+
+
+@app.route("/all_softwares", methods=["POST","GET"])
+def all_softwares():
+    if request.method == "POST":
+        pass
+
+    else: #GET
+        connection = conectarBD("localhost", "root", "root", "empresa")
+        cursor = connection.cursor() 
+
+        cursor.execute("SELECT * FROM softwares") 
+        all_softwares = cursor.fetchall() 
+        cursor.close()     
+        connection.close() 
+        return render_template("all_softwares.html", all_softwares=all_softwares)
 
 if __name__ =='__main__':
     app.run()
