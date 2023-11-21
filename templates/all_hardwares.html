@@ -28,7 +28,7 @@
 <div class="row">
   <div class="col"> 
     <label for="patrimony_search">Filtrar patrimônio</label>
-    <input class="form-control" type="number" id="patrimony_search" onkeyup="filter('patrimony_search', 0)" placeholder="..." min="0" max="999999" step="1">
+    <input autofocus class="form-control" type="number" id="patrimony_search" onkeyup="filter('patrimony_search', 0)" placeholder="..." min="0" max="999999" step="1">
   </div>
 
   <div class="col">
@@ -125,7 +125,13 @@
               <button type="submit" class="dropdown-item options">Editar</button>
             </form>
 
-            <a class="dropdown-item options" href="/add_hardware">Ver softwares</a>
+            <form action="/all_soft_hardware" method="get" class="edit-form">
+              <input name="hardware_id" type="hidden" value="{{ hardware[0] }}">
+              <input name="patrimony" type="hidden" value="{{ hardware[1] }}">
+              <button type="submit" class="dropdown-item options">Ver softwares</button>
+            </form>
+
+
             <button class="delete dropdown-item options" value="{{ hardware[0] }}">Apagar</button>
 
           </ul>
