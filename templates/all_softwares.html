@@ -30,23 +30,23 @@
 <div class="row">
   <div class="col">
     <label for="type_search">Filtrar Nome</label>
-    <input autofocus class="form-control" type="text" id="name_search" onkeyup="filter('name_search', 0)" placeholder="...">
+    <input autofocus class="form-control" type="text" id="name_search" onkeyup="filter('name_search', 0, 'softwares')" placeholder="...">
   </div>
 
   <div class="col">
     <label for="type_search">Filtrar Chave de Licença</label>
-    <input class="form-control" type="text" id="key_search" onkeyup="filter('key_search', 1)" placeholder="...">
+    <input class="form-control" type="text" id="key_search" onkeyup="filter('key_search', 1, 'softwares')" placeholder="...">
   </div>
 
   <div class="col">
-    <label for="type_search">Filtrar Hardware</label>
-    <input class="form-control" type="text" id="hardware_search" onkeyup="filter('hardware_search', 3)" placeholder="...">
+    <label for="type_search">Filtrar por hardware</label>
+    <input class="form-control" type="text" id="software_search" onkeyup="filter('software_search', 3, 'softwares')" placeholder="...">
   </div>
 
 </div>
 
 
-<table class="table table-striped" id='hardwares'>
+<table class="table table-striped" id='softwares'>
   <thead>
     <tr>
       <th scope="col">Nome</th>
@@ -88,7 +88,7 @@
 
             <form action="/all_rev_software" method="get" class="edit-form">
               <input name="software_id" type="hidden" value="{{ software[0] }}">
-              <input name="patrimony" type="hidden" value="{{ software[1] }}">
+              <input name="key" type="hidden" value="{{ software[2] }}">
 
               <button type="submit" class="dropdown-item options">Revisões</button>
             </form>

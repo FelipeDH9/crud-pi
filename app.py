@@ -72,8 +72,10 @@ REVISOES_HARDWARE = [
 ]
 
 REVISOES_SOFTWARE = [
-    'Controle de Licença',
+    'Atualização',
+    'Controle de licença',
     'Migração para outra máquina'
+
 ]
 
 
@@ -890,6 +892,133 @@ def edit_software():
             
 
             return render_template("edit_software.html", software=software, all_hardwares=all_hardwares)
+
+@app.route('/add_rev_software', methods=["POST","GET"])
+def add_rev_software():
+    if request.method == "POST":
+        software_id = request.form.get("software_id")
+        type_rev = request.form.get("type_rev")
+        dt_rev = request.form.get("dt_rev")
+        price = request.form.get("price")
+        infos = request.form.get("infos").capitalize()
+
+
+        connection = conectarBD("localhost", "root", "root", "empresa")
+        cursor = connection.cursor() 
+        cursor.execute("SELECT * FROM softwares WHERE id = %s", (software_id,)) 
+        software = cursor.fetchall() 
+        cursor.close() 
+        connection.close()
+
+        if type_rev:
+            type_rev = type_rev.strip().capitalize()
+
+        if not price:
+            price = 0
+        
+        if not infos:
+            infos = ''
+
+        # validar se o software_id existe, se é um digito e se é maior que 0, e se ele existe no bando de dados
+        # if not software_id or not software_id.isdigit() or int(software_id) <= 0 or not software:
+        if not validate_id(software_id) or not software:
+            flash("6 software não encontrado!", "danger")
+            return redirect('/all_softwares')
+
+        # validar se o tipo de rev está dentro da lista
+        # elif type_rev not in REVISOES_softWARE or not type_rev:
+        elif not is_in_list(type_rev, REVISOES_SOFTWARE):
+            flash("Tipo de revisão não encontrada!", "danger")
+            return redirect('/all_softwares')
+
+        # VALIDAR SE A dt_buy EXISTE E SE ESTÁ NO FORMATO DE DATA
+        # elif not dt_rev or not is_date(dt_rev):
+        elif not validate_date(dt_rev):
+            flash("Informe a data da revisão!", "warning")
+            return redirect('/all_softwares')
+        
+        # verificar se dt_rev é posterior a data de compra salva no banco de dados
+        elif dt_rev and convert_to_date(dt_rev) < software[0][4]:
+            dt_rev = convert_to_date(dt_rev)
+            flash("Data da revisão inválida, ela deve ser posterior a data de compra!", "warning")
+            return redirect("/all_softwares")
+        
+        #  VALIDAR SE O price POSSUI 7 DIGITOS NUMERICOS, SE É UM float E SE EXISTE
+        elif not number_length(price, 8) or not is_decimal(price):
+            flash("Preço da revisão deve ser um número decimal positivo com no máximo 7 dígitos!", "warning")
+            return redirect('/all_softwares')
+       
+        
+        
+        else:
+            # inserir no banco de dados
+            connection = conectarBD("localhost", "root", "root", "empresa")
+            cursor = connection.cursor() 
+            sql = "INSERT INTO revisoes_software (data, valor, tipo_revisao, infos_adicionais, softwares_id) VALUES (%s, %s, %s, %s, %s)"
+            data = (dt_rev, price, type_rev, infos, software_id)
+            cursor.execute(sql,data)
+
+            connection.commit()
+            cursor.close() 
+            connection.close()
+            
+            flash(f"Ativo adicionada!", "success")
+            return redirect("/all_softwares")
+
+
+
+    else: #GET
+        software_id = request.args.get("software_id")
+        
+        # validar se o software_id existe, se é um digito e se é maior que 0
+        if not validate_id(software_id):
+            flash("Software não encontrado!", "danger")
+            return redirect("/all_softwares")
+        
+        else:
+            # validar se o software escolhido está no banco de dados
+            connection = conectarBD("localhost", "root", "root", "empresa")
+            cursor = connection.cursor() 
+            cursor.execute("SELECT * FROM softwares WHERE id = %s", (software_id,))
+            software = cursor.fetchall()
+            cursor.close()
+            connection.close()
+
+
+            # validar se a quantidade de tuplas de resultado da busca no banco de dados é maior que 1, ou seja, se o dado existe
+            if len(software) != 1:
+                flash("Software não encontrado!", "danger")
+                return redirect("/add_rev_software")
+            
+
+            return render_template("add_rev_software.html", software=software,  type_revs=REVISOES_SOFTWARE)
+        
+
+@app.route("/all_rev_software")
+def all_rev_software():
+    software_id = request.args.get("software_id")
+    key = request.args.get("key")
+
+    # consultar todos as as revisões do software
+    connection = conectarBD("localhost", "root", "root", "empresa")
+    cursor = connection.cursor() 
+    cursor.execute("SELECT * FROM revisoes_software WHERE softwares_id = %s", (software_id,)) 
+    results = cursor.fetchall()
+
+    cursor.execute("SELECT nome FROM softwares WHERE id = %s", (software_id,))
+    name = cursor.fetchone()
+    cursor.close()
+    connection.close()
+
+
+    # converter a lista de tuplas em uma lista de listas
+    all_revs = list(map(list, results))
+
+    sum_revs = 0
+    for rev in all_revs:
+        sum_revs += rev[2]
+
+    return render_template("all_rev_software.html", all_revs=all_revs, key=key, sum_revs=sum_revs, name=name)
 
 if __name__ =='__main__':
     app.run()

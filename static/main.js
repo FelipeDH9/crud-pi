@@ -5,11 +5,11 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 
 // filter
-function filter(input_id, n) {
+function filter(input_id, n, type) {
     var input, filter, table, tr, td, i, txtValue;
     input = document.getElementById(input_id);
     filter = input.value.toUpperCase();
-    table = document.getElementById("hardwares");
+    table = document.getElementById(type);
     tr = table.getElementsByTagName("tr");
   
     for (i = 0; i < tr.length; i++) {

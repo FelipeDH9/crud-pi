@@ -22,6 +22,7 @@
 <h3 class="text-center">Sem revisões para mostrar!</h3>
 
 {% else %}
+<h1 class="text-center">Revisões de Software</h1>
 <h2 class="text-center">Filtros</h2>
 
 <!-- INPUTS DE FILTRAGEM -->
@@ -30,26 +31,27 @@
 
   <div class="col">
     <label for="data_search">Filtrar data</label>
-    <input class="form-control" type="date" id="data_search" onkeyup="filter('data_search', 0, 'hardwares')" placeholder="...">
+    <input class="form-control" type="date" id="sdata_search" onkeyup="filter('sdata_search', 0, 'softwares')" placeholder="...">
   </div>
 
   <div class="col">
     <label for="type_search">Filtrar Tipo de Revisão</label>
-    <input class="form-control" type="text" id="type_search" onkeyup="filter('type_search', 1, 'hardwares')" placeholder="...">
+    <input class="form-control" type="text" id="stype_search" onkeyup="filter('stype_search', 1, 'softwares')" placeholder="...">
   </div>
 
   <div class="col">
     <label for="infos_search">Filtrar Informações</label>
-    <input class="form-control" infos="text" id="infos_search" onkeyup="filter('infos_search', 3, 'hardwares')" placeholder="...">
+    <input class="form-control" infos="text" id="sinfos_search" onkeyup="filter('sinfos_search', 3, 'softwares')" placeholder="...">
   </div>
 </div>
 
 
-<h2 class="text-center">Todas as revisões do hardware: {{ patrimony }}</h2>
+<h2 class="text-center">Nome do software: {{ name[0] }}</h2>
+<h2 class="text-center">Chave de licença: {{ key }}</h2>
 
 <h3 class="text-center">Valor total das revisões: {{ sum_revs | money_format }}</h3>
 
-<table class="table table-striped" id='hardwares'>
+<table class="table table-striped" id='softwares'>
   <thead>
     <tr>
       <th scope="col">Data da revisão</th>

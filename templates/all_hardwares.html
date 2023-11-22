@@ -20,25 +20,26 @@
 
 
 {% if not all_hardwares %}
+<h3 class="text-center">Não há hardwares para mostrar!</h3>
+<a class="btn btn-primary" href="/add_hardware">Adicionar <i>Hardware</i></a>
 
-<a class="text-center" href="/add_hardware"><h2>Cadastre seus hardwares</h2></a>
 {% else %}
 
 <!-- INPUTS DE FILTRAGEM -->
 <div class="row">
   <div class="col"> 
     <label for="patrimony_search">Filtrar patrimônio</label>
-    <input autofocus class="form-control" type="number" id="patrimony_search" onkeyup="filter('patrimony_search', 0)" placeholder="..." min="0" max="999999" step="1">
+    <input autofocus class="form-control" type="number" id="patrimony_search" onkeyup="filter('patrimony_search', 0, 'hardwares')" placeholder="..." min="0" max="999999" step="1">
   </div>
 
   <div class="col">
     <label for="description_search">Filtrar descrição</label>
-    <input class="form-control" type="text" id="description_search" onkeyup="filter('description_search', 1)" placeholder="...">
+    <input class="form-control" type="text" id="description_search" onkeyup="filter('description_search', 1, 'hardwares')" placeholder="...">
   </div>
 
   <div class="col">
     <label for="department_search">Filtrar departamento</label>
-    <input class="form-control" type="text" id="department_search" onkeyup="filter('department_search', 2)" placeholder="...">
+    <input class="form-control" type="text" id="department_search" onkeyup="filter('department_search', 2, 'hardwares')" placeholder="...">
   </div>
 
 </div>
@@ -46,12 +47,12 @@
 <div class="row">
   <div class="col"> 
     <label for="buy_search">Filtrar pela data de compra</label>
-    <input class="form-control" type="date" id="buy_search" onkeyup="filter('buy_search', 3)">
+    <input class="form-control" type="date" id="buy_search" onkeyup="filter('buy_search', 3, 'hardwares')">
   </div>
 
   <div class="col">
     <label for="buy_search">Filtrar pela data da próxima revisão</label>
-    <input class="form-control" type="date" id="rev_search" onkeyup="filter('rev_search', 4)">
+    <input class="form-control" type="date" id="rev_search" onkeyup="filter('rev_search', 4, 'hardwares')">
   </div>
 
 </div>
