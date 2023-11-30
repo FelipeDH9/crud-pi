@@ -9,34 +9,6 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'fuabsnfouasbf0384h230br23082308328rftb32i230trg32t3gb20tg23tb'
 
 
-# def is_decimal(n):
-#     try:
-#         Decimal(n)
-#         return True
-#     except InvalidOperation:
-#         return False
-
-
-# def is_date(value):
-#     date_regex = re.compile(r'^\d{4}-\d{2}-\d{2}$')
-
-#     if date_regex.match(value):
-#         return True
-#     else:
-#         return False
-
-
-# def number_length(number, n):
-#     # converte o numero em string
-#     number_str = str(number)
-#     # encontra o tamanho da string e subtrai 1 para desconsiderar o ponto decimal
-#     number_length = len(number_str)
-#     # se o tamanho for maior que n ou menor ou igual que 0, então retorna false
-#     if number_length > n or number_length <= 0:
-#         return False
-#     else:
-#         return True 
-
 def money_format(value):
     return f"R${value:,.2f}"
 
@@ -485,7 +457,7 @@ def add_rev_hardware():
             flash("7 Hardware não encontrado!", "danger")
             return redirect("/add_rev_hardware")
         
-        else:
+        else: # GET
             # validar se o hardware escolhido está no banco de dados
             connection = conectarBD("localhost", "root", "root", "empresa")
             cursor = connection.cursor() 
@@ -524,7 +496,9 @@ def all_rev_hardware():
     for rev in all_revs:
         sum_revs += rev[2]
 
-    return render_template("all_rev_hardware.html", all_revs=all_revs, patrimony=patrimony, sum_revs=sum_revs)
+    # return render_template("mes.html", mes=hardware_id)
+
+    return render_template("all_rev_hardware.html", all_revs=all_revs, patrimony=patrimony, sum_revs=sum_revs, hardware_id=int(hardware_id))
 
 
 @app.route("/all_soft_hardware")
@@ -553,6 +527,7 @@ def all_soft_hardware():
 @app.route("/add_software", methods=["POST","GET"])
 def add_software():
     if request.method == "POST":
+
         key = request.form.get("key").strip()
         name = request.form.get("name").title().strip()
         description = request.form.get("description").capitalize().strip()
@@ -648,6 +623,22 @@ def add_software():
 
     else: #GET
         # ler DB e achar todos os patrimonios, e enviar essa lista para a página de adicionar softwares
+
+        
+        connection = conectarBD("localhost", "root", "root", "empresa")
+        cursor = connection.cursor() 
+
+        #Realizando um select para mostrar todas as linhas e colunas da tabela
+        cursor.execute("SELECT * FROM hardwares") #Executa o comando SQL
+        all_hardwares = cursor.fetchall() #Obtendo todas as linhas geradas pelo select
+        cursor.close() #Fecha o cursor
+        connection.close() #Fecha a conexão com o banco
+
+        if len(all_hardwares) == 0:
+            flash("É necessário cadastrar um hardware primeiro para poder cadastrar um software!", "warning")
+            return render_template("add_hardware.html", departments=DEPARTMENTS_LIST)
+
+    
         connection = conectarBD("localhost", "root", "root", "empresa")
         cursor = connection.cursor() 
 
@@ -1018,7 +1009,7 @@ def all_rev_software():
     for rev in all_revs:
         sum_revs += rev[2]
 
-    return render_template("all_rev_software.html", all_revs=all_revs, key=key, sum_revs=sum_revs, name=name)
+    return render_template("all_rev_software.html", all_revs=all_revs, key=key, sum_revs=sum_revs, name=name, software_id=int(software_id))
 
 if __name__ =='__main__':
     app.run()

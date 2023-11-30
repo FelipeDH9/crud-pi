@@ -16,12 +16,22 @@
 
 {% endfor %}
 
+<h1 class="text-center">Revisões do Ativo: {{ patrimony }}</h1>
 
 
 {% if not all_revs %}
 <h3 class="text-center">Sem revisões para mostrar!</h3>
+<form action="/add_rev_hardware" method="get" class="edit-form">
+  <input name="hardware_id" type="hidden" value="{{ hardware_id }}">
+  <button type="submit" class="btn btn-primary">Adicionar Revisão</button>
+</form>
+
 
 {% else %}
+<form action="/add_rev_hardware" method="get" class="edit-form">
+  <input name="hardware_id" type="hidden" value="{{ hardware_id }}">
+  <button type="submit" class="btn btn-primary">Adicionar Revisão</button>
+</form>
 <h2 class="text-center">Filtros</h2>
 
 <!-- INPUTS DE FILTRAGEM -->

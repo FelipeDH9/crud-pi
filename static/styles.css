@@ -1,6 +1,9 @@
 :root {
     --main-color: rgb(26, 128, 245);
-    --secondary-color: rgb(0, 44, 165);
+    /* --main-color: rgb(26, 128, 245); */
+
+    /* --secondary-color: rgb(0, 44, 165); */
+    --secondary-color: rgb(72 75 83);
     --bg-color: #adadad;
     --fav-color: rgb(25, 172, 5);
     --text-color: rgb(0, 0, 0);
@@ -169,14 +172,15 @@
   .btn {
     margin-top: 1rem;
     background-color: var(--secondary-color);
-    border-color: var(--secondary-color);
+    /* border-color: var(--secondary-color); */
+    border: none;
     width: 100%;
     font-weight: bold;
   }
   
   .btn:hover {
     background-color: var(--main-color);
-    border-color: var(--main-color);
+    /* border-color: var(--main-color); */
   }
   
   .flex {
@@ -209,7 +213,7 @@
   }
   
   .card {
-    border-color: var(--secondary-color);
+    /* border-color: var(--secondary-color); */
     background-color: var(--bg-color);
     margin: 1rem 0;
   }
