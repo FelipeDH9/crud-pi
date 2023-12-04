@@ -73,7 +73,7 @@
     {% for rev in all_revs %}
     
       <tr>
-        <td scope="row">{{ rev[1] }}</td>
+        <td scope="row">{{ rev[1]| date_format }}</td>
         <td>{{  rev[3]  }}</td>
         <td>{{  rev[2] | money_format }}</td>
         {% if not rev[4] %}

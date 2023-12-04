@@ -12,6 +12,9 @@ app.config['SECRET_KEY'] = 'fuabsnfouasbf0384h230br23082308328rftb32i230trg32t3g
 def money_format(value):
     return f"R${value:,.2f}"
 
+def date_format(value, format ="%d/%m/%Y" ):
+    return value.strftime(format)
+
 
 def convert_to_date(value):
     date_format = '%Y-%m-%d'
@@ -19,6 +22,8 @@ def convert_to_date(value):
     return date.date()
 
 app.jinja_env.filters["money_format"] = money_format
+app.jinja_env.filters["date_format"] = date_format
+
 
 
 DEPARTMENTS_LIST = [
@@ -69,7 +74,7 @@ def index():
 def add_hardware():
     if request.method == "POST":
         patrimony = request.form.get("patrimony").strip()
-        description = request.form.get("description").capitalize().strip()
+        description = request.form.get("description").strip()
         dt_buy = request.form.get("dt_buy")
         dt_pr_rev = request.form.get("dt_pr_rev")
         price = request.form.get("price")
@@ -77,8 +82,11 @@ def add_hardware():
         
 
         # VALIDAR SE patrimony EXISTE, POSSUI 6 DIGITOS NUMERICOS
-        if not validate_patrimony(patrimony, 6):
+        if len(patrimony) != 6:
             flash("Patrimonio deve conter seis dígitos numéricos!", "warning")
+            return render_template("add_hardware.html", departments=DEPARTMENTS_LIST)
+        if len(description) > 45:
+            flash("Descrição deve conter no máximo 45 dígitos alfanuméricos!", "warning")
             return render_template("add_hardware.html", departments=DEPARTMENTS_LIST)
         
 
@@ -232,7 +240,7 @@ def delete_hardware():
 def edit_hardware():
     if request.method == 'POST':
         hardware_id = request.form.get("hardware_id")
-        description = request.form.get("description").capitalize().strip()
+        description = request.form.get("description").strip()
         dt_buy = request.form.get("dt_buy")
         dt_pr_rev = request.form.get("dt_pr_rev")
         price = request.form.get("price")
@@ -243,6 +251,9 @@ def edit_hardware():
         if not validate_id(hardware_id):
             flash("3 Hardware não encontrado 1!", "danger")
             return redirect("/all_hardwares")
+        if len(description) > 45:
+            flash("Descrição deve conter no máximo 45 dígitos alfanuméricos!", "warning")
+            return render_template("add_hardware.html", departments=DEPARTMENTS_LIST)
         
         
         connection = conectarBD("localhost", "root", "root", "empresa")
@@ -390,6 +401,11 @@ def add_rev_hardware():
         
         if not infos:
             infos = ''
+ 
+        if len(infos) > 45:
+            flash("Informações adicionais da revisão deve conter no máximo 45 dígitos alfanuméricos!", "warning")
+            return redirect('/all_hardwares')
+
 
         # validar se o hardware_id existe, se é um digito e se é maior que 0, e se ele existe no bando de dados
         # if not hardware_id or not hardware_id.isdigit() or int(hardware_id) <= 0 or not hardware:
@@ -529,23 +545,23 @@ def add_software():
     if request.method == "POST":
 
         key = request.form.get("key").strip()
-        name = request.form.get("name").title().strip()
-        description = request.form.get("description").capitalize().strip()
+        name = request.form.get("name").strip()
+        description = request.form.get("description").strip()
         dt_buy = request.form.get("dt_buy")
         dt_pr_rev = request.form.get("dt_pr_rev")
         price = request.form.get("price")
         hardware_id = request.form.get("hardware_id")
 
-        if not key:
-            flash("Digite a chave de lincença!", "warning")
+        if not key or len(key) > 45:
+            flash("Digite a chave de lincença, deve conter no máximo 45 dígitos alfanuméricos!", "warning")
             return render_template("add_software.html")
         
-        if not name:
-            flash("Digite o nome do software!", "warning")
+        if not name or len(name) > 45:
+            flash("Digite o nome do software, deve conter no máximo 45 dígitos alfanuméricos!", "warning")
             return render_template("add_software.html")
         
-        if not description:
-            flash("Digite uma breve descrição do software!", "warning")
+        if not description or len(description) > 45:
+            flash("Digite uma breve descrição do software, deve conter no máximo 45 dígitos alfanuméricos!", "warning")
             return render_template("add_software.html")
         
         # VALIDAR SE A dt_buy EXISTE E SE ESTÁ NO FORMATO DE DATA
@@ -710,9 +726,9 @@ def delete_software():
 def edit_software():
     if request.method == 'POST':
         software_id = request.form.get("software_id")
-        name = request.form.get("name").strip().title()
+        name = request.form.get("name").strip()
         key = request.form.get("key").strip()
-        description = request.form.get("description").capitalize().strip()
+        description = request.form.get("description").strip()
         dt_buy = request.form.get("dt_buy")
         dt_pr_rev = request.form.get("dt_pr_rev")
         price = request.form.get("price")
@@ -749,7 +765,6 @@ def edit_software():
         # VALIDAR SE DT_BUY EXISTE E ESTÁ EM FORMATO DATE
         if dt_buy and not is_date(dt_buy):
         # if not validate_date(dt_buy):
-            
             flash("Data de compra inválida, ela deve ser em formato de data!", "warning")
             return redirect("/all_softwares")
         
@@ -786,7 +801,22 @@ def edit_software():
         # elif department not in DEPARTMENTS_LIST or not department:
         elif not is_in_list(patrimony, all_patrimonies):
             flash("Hardware não encontrado", "danger")
-            return redirect("/add_software")
+            return redirect("/all_softwares")
+        
+        elif len(name) > 45:
+            flash("Nome deve conter no máximo 45 dígitos alfanuméricos!", "warning")
+            return redirect("/all_softwares")
+
+        
+        elif len(description) > 45:
+            flash("Descrição deve conter no máximo 45 dígitos alfanuméricos!", "warning")
+            return redirect("/all_softwares")
+
+        
+        elif len(key) > 45:
+            flash("Chave de Licença deve conter no máximo 45 dígitos alfanuméricos!", "warning")
+            return redirect("/all_softwares")
+
         
         # SE PASSAR DE TODAS AS VALIDAÇÕES 
         else:               
@@ -891,7 +921,7 @@ def add_rev_software():
         type_rev = request.form.get("type_rev")
         dt_rev = request.form.get("dt_rev")
         price = request.form.get("price")
-        infos = request.form.get("infos").capitalize()
+        infos = request.form.get("infos").strip()
 
 
         connection = conectarBD("localhost", "root", "root", "empresa")
@@ -909,6 +939,10 @@ def add_rev_software():
         
         if not infos:
             infos = ''
+        
+        if len(infos) > 45:
+            flash("Informações adicionais da revisão deve conter no máximo 45 dígitos alfanuméricos!", "warning")
+            return redirect("/all_softwares")
 
         # validar se o software_id existe, se é um digito e se é maior que 0, e se ele existe no bando de dados
         # if not software_id or not software_id.isdigit() or int(software_id) <= 0 or not software:

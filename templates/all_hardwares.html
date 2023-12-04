@@ -84,8 +84,8 @@
         <td scope="row">{{ hardware[1] }}</td>
         <td>{{  hardware[2]  }}</td>
         <td>{{  hardware[6]  }}</td>
-        <td>{{  hardware[3]  }}</td>
-        <td>{{  hardware[4]  }}</td>
+        <td>{{  hardware[3] | date_format }}</td>
+        <td>{{  hardware[4] | date_format }}</td>
         <td>{{  hardware[5] | money_format }}</td>
 
         {% if hardware[7] %}
